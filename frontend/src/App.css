@@ -1,0 +1,467 @@
+#root {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 20px;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.app-container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #2c3e50;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Header */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #4a90e2;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.8em;
+  color: #2c3e50;
+}
+
+.header-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.debug-toggle {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.debug-toggle:hover {
+  background: #5a6268;
+}
+
+.debug-toggle.active {
+  background: #e74c3c;
+}
+
+/* Main Content Layout */
+.main-content {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start; /* Changed from default stretch */
+}
+
+/* Sidebar - Make it scrollable independently */
+.sidebar {
+  flex: 0 0 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Make sidebar sections independent */
+.sidebar-section {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  flex-shrink: 0; /* Keep this */
+}
+
+/* FIRST sidebar section (Select Exercise) - Special handling */
+.sidebar-section:first-child {
+  min-height: 200px; /* Minimum height when no exercise selected */
+  overflow: visible; /* Allow dropdown to overflow naturally */
+  position: relative; /* Create positioning context for dropdown */
+}
+
+/* Add max-height to control overall section expansion */
+.sidebar-section:first-child.with-exercise {
+  max-height: 500px; /* Limit expansion when exercise is selected */
+  overflow-y: auto; /* Add scrollbar only when content exceeds 500px */
+}
+
+.sidebar-section h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #2c3e50;
+  font-size: 1.1em;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 8px;
+}
+
+/* Status Info */
+.status-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.status-item:last-child {
+  border-bottom: none;
+}
+
+.status-label {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.status-value {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.status-value.active {
+  color: #2ecc71;
+}
+
+.status-value.inactive {
+  color: #e74c3c;
+}
+
+/* Status value colors */
+.status-value.status-none {
+  color: #dc3545;
+}
+
+.status-value.status-ready {
+  color: #ffc107;
+}
+
+.status-value.status-active {
+  color: #28a745;
+}
+
+/* Main Area - Right */
+.main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+/* Camera Section - FIX THIS */
+.camera-section {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  min-height: 500px;
+  flex-grow: 1;
+}
+
+/* Remove or update camera-view-wrapper since it's redundant */
+.camera-view-wrapper {
+  width: 100%;
+  height: 100%;
+  flex-grow: 1; /* Take all available space */
+  display: flex;
+  flex-direction: column;
+}
+
+.camera-section h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #2c3e50;
+  font-size: 1.1em;
+}
+
+.feedback-section {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+
+  /* RESPONSIVE FIX */
+  max-height: 380px;      /* you can tune this */
+  overflow-y: auto;
+}
+
+.feedback-section h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #2c3e50;
+  font-size: 1.1em;
+}
+
+/* Welcome Message */
+.welcome-message {
+  text-align: center;
+  padding: 20px;
+}
+
+.welcome-message p {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 1.1em;
+}
+
+.quick-guide {
+  text-align: left;
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #4CAF50;
+}
+
+.quick-guide h4 {
+  color: #2c3e50;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.quick-guide ol {
+  margin: 0;
+  padding-left: 20px;
+  color: #555;
+}
+
+.quick-guide li {
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+/* Exercise Selector Fix */
+.exercise-selector {
+  min-height: 200px;
+}
+
+/* Make dropdown larger */
+.dropdown-menu {
+  max-height: 300px !important;
+}
+
+/* Media Queries */
+@media (max-width: 1200px) {
+  .main-content {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    flex: none;
+    width: 100%;
+    height: auto; /* Remove fixed height on mobile */
+    position: static; /* Remove sticky on mobile */
+  }
+  
+  .camera-section,
+  .feedback-section {
+    height: auto; /* Auto height on mobile */
+    min-height: 400px; /* Reasonable minimum */
+    max-height: none;
+  }
+}
+
+@media (max-width: 768px) {
+  #root {
+    padding: 10px;
+  }
+  
+  .app-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .sidebar {
+    flex-direction: column;
+  }
+  
+  .sidebar-section {
+    min-width: 100%;
+  }
+  
+  .camera-view {
+    flex-direction: column;
+  }
+}
+
+.header-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-subtitle {
+  font-size: 0.9em;
+  color: #6c757d;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.category-selector {
+  margin-right: 15px;
+}
+
+.category-dropdown {
+  padding: 8px 15px;
+  border-radius: 6px;
+  border: 2px solid #3498db;
+  background: white;
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 0.9em;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.category-dropdown:hover {
+  border-color: #2980b9;
+  background: #f8f9fa;
+}
+
+.category-dropdown:focus {
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.category-display h4 {
+  color: #2c3e50;
+  margin: 0 0 10px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #3498db;
+  font-size: 1em;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.ready-message {
+  text-align: center;
+  padding: 30px 20px;
+}
+
+.ready-icon {
+  font-size: 3em;
+  margin-bottom: 15px;
+}
+
+.ready-message h3 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.ready-message p {
+  color: #666;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.ready-message strong {
+  color: #3498db;
+}
+
+.session-timer {
+  font-size: 0.9em;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Different colors for different states */
+.session-timer:has-text("Session Active") {
+  background: #d4edda;
+  color: #155724;
+}
+
+.session-timer:has-text("Ready to Start") {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.session-timer:has-text("No Exercise Selected") {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.session-status-none {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.session-status-ready {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.session-status-active {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+/* Alternative using specific classes if :has isn't supported */
+.session-status-active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.session-status-ready {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.session-status-none {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.exercise-type {
+  font-size: 0.9em;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.welcome-icon {
+  font-size: 3em;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.welcome-message h3 {
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.welcome-message p {
+  text-align: center;
+  color: #666;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
