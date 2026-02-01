@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import CameraView from './components/CameraView/CameraView';
 import ExerciseSelector from './components/ExerciseSelector/ExerciseSelector';
-import FeedbackPanel from './components/FeedbackPanel/FeedbackPanel';
 import SessionControls from './components/SessionControls/SessionControls';
 import { PoseProvider, usePose } from './contexts/PoseContext';
 import { getUpperBodyExercisesByCategory } from './config/exercises/upper-body';
@@ -167,17 +166,6 @@ function MainApp() {
               </div>
             </div>
           </div>
-          
-          {showDebug && (
-            <div className="sidebar-section debug-section">
-              <h4>System Info</h4>
-              <div className="debug-info">
-                <p>Pose Detection: {sessionActive ? 'Active' : 'Standby'}</p>
-                <p>Analysis Engine: Ready</p>
-                <p>Frame Rate: Optimal</p>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Main Area - Camera and Feedback */}
@@ -210,10 +198,14 @@ function MainApp() {
             </div>
             
             {localExercise && sessionActive ? (
-              <FeedbackPanel
-                exercise={localExercise}
-                showDebug={showDebug}
-              />
+              <div className="performance-summary">
+                <div className="ready-message">
+                  <div className="ready-icon">📊</div>
+                  <h3>Live Analysis Active</h3>
+                  <p>Real-time performance tracking is now displayed in the camera panel.</p>
+                  <p>Check the right panel for <strong>Total Reps</strong> and <strong>Form Score</strong>.</p>
+                </div>
+              </div>
             ) : localExercise ? (
               <div className="ready-message">
                 <div className="ready-icon">🎯</div>

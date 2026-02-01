@@ -8,9 +8,9 @@ export default function CameraView({ isActive, showLandmarks, showAngles, curren
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const poseRef = useRef(null);
-  const { updatePoseData, angles, setIsDetecting } = usePose();
+  const { updatePoseData, angles, setIsDetecting, analysis } = usePose(); // Added analysis
   
-   // Add debugging for currentExercise
+  // Add debugging for currentExercise
   useEffect(() => {
     console.log('📹 CameraView - Exercise changed:', currentExercise);
   }, [currentExercise]);
@@ -49,6 +49,26 @@ export default function CameraView({ isActive, showLandmarks, showAngles, curren
       stopCamera();
     };
   }, [isActive]);
+
+  // Helper function to get form score text and color
+  const getFormScoreInfo = (score) => {
+    const formScore = score || 50;
+    let text = 'Needs Work';
+    let colorClass = 'form-needs-work';
+    
+    if (formScore >= 90) {
+      text = 'Excellent';
+      colorClass = 'form-excellent';
+    } else if (formScore >= 75) {
+      text = 'Good';
+      colorClass = 'form-good';
+    } else if (formScore >= 60) {
+      text = 'Fair';
+      colorClass = 'form-fair';
+    }
+    
+    return { text, colorClass, value: formScore };
+  };
 
   const startCamera = async () => {
     if (isInitializedRef.current) {
@@ -263,6 +283,25 @@ export default function CameraView({ isActive, showLandmarks, showAngles, curren
             <div className="stat-label">Confidence</div>
             <div className={`stat-value confidence-${confidence.toLowerCase()}`}>
               {confidence}
+            </div>
+          </div>
+        </div>
+        
+        {/* NEW: Performance Stats */}
+        <div className="performance-stats">
+          <h4>Performance</h4>
+          <div className="performance-grid">
+            <div className="performance-item">
+              <span className="performance-label">Total Reps</span>
+              <span className="performance-value">
+                {analysis?.totalReps || 0}
+              </span>
+            </div>
+            <div className="performance-item">
+              <span className="performance-label">Form Score</span>
+              <span className={`performance-value ${getFormScoreInfo(analysis?.formScore).colorClass}`}>
+                {getFormScoreInfo(analysis?.formScore).value}%
+              </span>
             </div>
           </div>
         </div>
