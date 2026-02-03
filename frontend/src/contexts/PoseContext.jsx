@@ -25,6 +25,7 @@ export function PoseProvider({ children }) {
 
   // PoseContext.jsx - Fix the updatePoseData function
 // PoseContext.jsx - Update the updatePoseData function
+// In the updatePoseData function, add better logging:
 const updatePoseData = useCallback((landmarks) => {
   if (!landmarks) return;
 
@@ -32,86 +33,74 @@ const updatePoseData = useCallback((landmarks) => {
     const angles = calculateAllAngles(landmarks);
     let analysis = null;
     
-    console.log('🔄 UPDATE POSE DATA:', {
-      hasLandmarks: !!landmarks,
-      hasAnalyzer: !!prev.exerciseAnalyzer,
-      currentExercise: prev.currentExercise,
-      anglesCount: Object.keys(angles).length,
-      angleValues: angles
-    });
-    
     // If we have an exercise analyzer, analyze the frame
     if (prev.exerciseAnalyzer && prev.currentExercise) {
-      console.log('📊 ANALYZING FRAME with angles:', angles);
-      
       try {
         analysis = prev.exerciseAnalyzer.analyzeFrame(angles, Date.now());
-        console.log('✅ ANALYSIS RESULT:', {
-          totalReps: analysis.totalReps,
-          formScore: analysis.formScore,
-          repPhase: analysis.repPhase,
-          currentFeedback: analysis.currentFeedback
-        });
+        
+        // Log rep counting events
+        if (analysis.totalReps !== prev.analysis?.totalReps) {
+          console.log(`🎯 NEW REP COUNTED! Total: ${analysis.totalReps}`);
+        }
+        
+        // Log form score changes
+        if (prev.analysis && Math.abs(analysis.formScore - prev.analysis.formScore) > 5) {
+          console.log(`📊 Form score: ${prev.analysis.formScore}% → ${analysis.formScore}%`);
+        }
       } catch (error) {
         console.error('❌ Error in analysis:', error);
       }
-    } else {
-      console.log('⚠️ Cannot analyze - missing:', {
-        analyzer: !prev.exerciseAnalyzer ? 'MISSING' : 'OK',
-        exercise: !prev.currentExercise ? 'MISSING' : 'OK'
-      });
     }
 
-    // Always return with analysis
     return {
       ...prev,
       landmarks,
       angles,
       isDetecting: true,
-      analysis: analysis || prev.analysis // Keep previous analysis if new one is null
+      analysis: analysis || prev.analysis
     };
   });
 }, []);
 
-const setCurrentExercise = useCallback((exerciseId) => {
-  if (!exerciseId) {
+  const setCurrentExercise = useCallback((exerciseId) => {
+    if (!exerciseId) {
+      setState(prev => ({
+        ...prev,
+        currentExercise: null,
+        exerciseAnalyzer: null,
+        analysis: null
+      }));
+      return;
+    }
+
+    const exerciseConfig = getUpperBodyExercise(exerciseId);
+    if (!exerciseConfig) {
+      console.error(`Exercise not found: ${exerciseId}`);
+      return;
+    }
+
+    const analyzer = createExerciseAnalyzer(exerciseConfig);
+    
+    // Reset the analyzer to start fresh
+    analyzer.reset();
+    
     setState(prev => ({
       ...prev,
-      currentExercise: null,
-      exerciseAnalyzer: null,
-      analysis: null
+      currentExercise: exerciseId,
+      exerciseAnalyzer: analyzer,
+      analysis: null,
+      sessionStats: {
+        ...prev.sessionStats,
+        startTime: Date.now(),
+        totalReps: 0,
+        goodReps: 0,
+        formScoreHistory: []
+      }
     }));
-    return;
-  }
-
-  const exerciseConfig = getUpperBodyExercise(exerciseId);
-  if (!exerciseConfig) {
-    console.error(`Exercise not found: ${exerciseId}`);
-    return;
-  }
-
-  const analyzer = createExerciseAnalyzer(exerciseConfig);
-  
-  // ✅ RESET the analyzer to start fresh
-  analyzer.reset();
-  
-  setState(prev => ({
-    ...prev,
-    currentExercise: exerciseId,
-    exerciseAnalyzer: analyzer,
-    analysis: null,
-    // ✅ Reset session stats with new start time
-    sessionStats: {
-      ...prev.sessionStats,
-      startTime: Date.now(),
-      totalReps: 0,
-      goodReps: 0,
-      formScoreHistory: []
-    }
-  }));
-  
-  console.log(`✅ Exercise analyzer created for: ${exerciseConfig.name}`);
-}, []);
+    
+    console.log(`✅ Exercise analyzer created for: ${exerciseConfig.name}`);
+    console.log(`🎯 Target angles:`, exerciseConfig.targetAngles);
+  }, []);
 
   const resetExercise = useCallback(() => {
     if (state.exerciseAnalyzer) {
