@@ -10,9 +10,6 @@ physiotherapy-fyp/
 │   │   ├── ├──ExerciseSelector/
 │   │   ├── │  └── ExerciseSelector.css
 │   │   ├── │  └── ExerciseSelector.jsx
-│   │   ├── ├──FeedbackPanel/
-│   │   ├── │  └── FeedbackPanel.css
-│   │   ├── │  └── FeedbackPanel.jsx
 │   │   ├── ├──HelpModal/
 │   │   ├── │  └── HelpModal.css
 │   │   ├── │  └── HelpModal.jsx

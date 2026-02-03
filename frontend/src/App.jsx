@@ -14,7 +14,7 @@ function MainApp() {
   const [showDebug, setShowDebug] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('upper');
   
-  // ✅ Get setCurrentExercise from PoseContext
+  //  Get setCurrentExercise from PoseContext
   const { setCurrentExercise: setPoseExercise, resetExercise } = usePose();
   
   const exerciseCategories = {
@@ -27,7 +27,7 @@ function MainApp() {
   const handleExerciseSelect = (exerciseId) => {
     console.log('🔄 Selecting exercise:', exerciseId);
     
-    // ✅ Update both local state AND PoseContext
+    //  Update both local state AND PoseContext
     setLocalExercise(exerciseId);
     setPoseExercise(exerciseId);
     
@@ -55,7 +55,7 @@ function MainApp() {
     console.log('🔄 Resetting session');
     setSessionActive(false);
     setLocalExercise(null);
-    resetExercise(); // ✅ Reset in PoseContext too
+    resetExercise(); //  Reset in PoseContext too
   };
 
   // Helper function to get session status
@@ -96,7 +96,7 @@ function MainApp() {
               onChange={(e) => {
                 setSelectedCategory(e.target.value);
                 setLocalExercise(null); // Clear exercise when category changes
-                setPoseExercise(null); // ✅ Also clear in PoseContext
+                setPoseExercise(null); //  Also clear in PoseContext
               }}
               className="category-dropdown"
             >
@@ -167,7 +167,6 @@ function MainApp() {
             </div>
           </div>
         </div>
-
         {/* Main Area - Camera and Feedback */}
         <div className="main-area">
           <div className="camera-section">
