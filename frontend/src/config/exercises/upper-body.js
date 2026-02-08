@@ -185,38 +185,38 @@ export const UPPER_BODY_EXERCISES = {
   },
   
   // Neck Exercises (Limited)
-  'neck-flexion': {
-    id: 'neck-flexion',
-    name: 'Neck Flexion/Extension',
-    description: 'Gently bend neck forward and backward',
-    difficulty: 'beginner',
-    bodyRegion: 'upper',
-    joint: 'neck',
-    movementType: 'flexion-extension',
-    injuryTarget: ['cervical-stiffness'],
-    warning: 'Requires careful monitoring - limited tracking accuracy',
+  // 'neck-flexion': {
+  //   id: 'neck-flexion',
+  //   name: 'Neck Flexion/Extension',
+  //   description: 'Gently bend neck forward and backward',
+  //   difficulty: 'beginner',
+  //   bodyRegion: 'upper',
+  //   joint: 'neck',
+  //   movementType: 'flexion-extension',
+  //   injuryTarget: ['cervical-stiffness'],
+  //   warning: 'Requires careful monitoring - limited tracking accuracy',
     
-    landmarks: {
-      proximal: 'ear',
-      joint: 'shoulder',  // Proxy for neck
-      distal: 'hip'
-    },
+  //   landmarks: {
+  //     proximal: 'ear',
+  //     joint: 'shoulder',  // Proxy for neck
+  //     distal: 'hip'
+  //   },
     
-    targetAngles: {
-      neck: {
-        min: 120,
-        max: 160,
-        optimal: [140, 150],
-        resting: 160
-      }
-    },
+  //   targetAngles: {
+  //     neck: {
+  //       min: 120,
+  //       max: 160,
+  //       optimal: [140, 150],
+  //       resting: 160
+  //     }
+  //   },
     
-    repCounting: {
-      type: 'gentle',
-      threshold: 140,
-      cooldown: 2000  // Slower for neck
-    }
-  }
+  //   repCounting: {
+  //     type: 'gentle',
+  //     threshold: 140,
+  //     cooldown: 2000  // Slower for neck
+  //   }
+  // }
 };
 
 // Helper function to get exercises by category
@@ -224,7 +224,7 @@ export const getUpperBodyExercisesByCategory = () => {
   return {
     shoulder: ['shoulder-abduction', 'shoulder-flexion', 'shoulder-external-rotation'],
     elbow: ['elbow-flexion'],
-    neck: ['neck-flexion']
+    // neck: ['neck-flexion']
   };
 };
 
