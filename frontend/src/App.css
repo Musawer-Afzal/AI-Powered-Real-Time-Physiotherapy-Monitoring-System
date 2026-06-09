@@ -57,6 +57,101 @@
   background: #e74c3c;
 }
 
+/* Exercise Info Panel */
+.exercise-info {
+  margin-top: 15px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #3498db;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.exercise-info h4 {
+  margin: 0 0 8px 0;
+  color: #2c3e50;
+  font-size: 0.95em;
+  font-weight: 600;
+}
+
+.exercise-description {
+  font-size: 0.85em;
+  color: #666;
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+
+.angle-info {
+  background: #e8f4fc;
+  border-radius: 6px;
+  padding: 10px;
+  margin-top: 8px;
+}
+
+.angle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #d4e6f1;
+  font-size: 0.85em;
+}
+
+.angle-row:last-child {
+  border-bottom: none;
+}
+
+.angle-label {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.angle-values {
+  color: #3498db;
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+}
+
+.angle-optimal {
+  color: #27ae60;
+}
+
+.difficulty-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.7em;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.difficulty-beginner {
+  background: #d4edda;
+  color: #155724;
+}
+
+.difficulty-intermediate {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.difficulty-advanced {
+  background: #f8d7da;
+  color: #721c24;
+}
+
 /* Main Content Layout */
 .main-content {
   display: flex;
@@ -82,17 +177,37 @@
   flex-shrink: 0; /* Keep this */
 }
 
-/* FIRST sidebar section (Select Exercise) - Special handling */
+/* Exercise selector container sizing */
 .sidebar-section:first-child {
-  min-height: 200px; /* Minimum height when no exercise selected */
-  overflow: visible; /* Allow dropdown to overflow naturally */
-  position: relative; /* Create positioning context for dropdown */
+  min-height: 100px;
+  max-height: none;
+  overflow: visible;
+  transition: min-height 0.3s ease;
 }
 
-/* Add max-height to control overall section expansion */
-.sidebar-section:first-child.with-exercise {
-  max-height: 500px; /* Limit expansion when exercise is selected */
-  overflow-y: auto; /* Add scrollbar only when content exceeds 500px */
+.sidebar-section:first-child.has-exercise {
+  min-height: 100px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Scrollbar for exercise info when needed */
+.sidebar-section:first-child.has-exercise::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-section:first-child.has-exercise::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.sidebar-section:first-child.has-exercise::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.sidebar-section:first-child.has-exercise::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 .sidebar-section h3 {
@@ -249,9 +364,9 @@
 }
 
 /* Exercise Selector Fix */
-.exercise-selector {
-  min-height: 200px;
-}
+/* .exercise-selector {
+  min-height: 400px;
+} */
 
 /* Make dropdown larger */
 .dropdown-menu {
