@@ -4,8 +4,98 @@ import CameraView from './components/CameraView/CameraView';
 import ExerciseSelector from './components/ExerciseSelector/ExerciseSelector';
 import SessionControls from './components/SessionControls/SessionControls';
 import { PoseProvider, usePose } from './contexts/PoseContext';
-import { getUpperBodyExercisesByCategory } from './config/exercises/upper-body';
+import { getUpperBodyExercisesByCategory, getUpperBodyExercise } from './config/exercises/upper-body';
+import { getMidBodyExercisesByCategory, getMidBodyExercise } from './config/exercises/mid-body';
+import { getLowerBodyExercisesByCategory, getLowerBodyExercise } from './config/exercises/lower-body';
 import './App.css';
+
+// Helper function to get exercise from any category
+const getExercise = (id) => {
+  return getUpperBodyExercise(id) || getMidBodyExercise(id) || getLowerBodyExercise(id);
+};
+
+// Exercise Info Component
+function ExerciseInfo({ exerciseId, exercise }) {
+  if (!exercise) return null;
+  
+  const getDifficultyClass = (difficulty) => {
+    switch(difficulty) {
+      case 'beginner': return 'difficulty-beginner';
+      case 'intermediate': return 'difficulty-intermediate';
+      case 'advanced': return 'difficulty-advanced';
+      default: return 'difficulty-beginner';
+    }
+  };
+  
+  const getDifficultyText = (difficulty) => {
+    switch(difficulty) {
+      case 'beginner': return 'Beginner';
+      case 'intermediate': return 'Intermediate';
+      case 'advanced': return 'Advanced';
+      default: return 'Beginner';
+    }
+  };
+  
+  // Get angle information based on joint
+  const getAngleInfo = () => {
+    const targetAngles = exercise.targetAngles;
+    const joint = exercise.joint;
+    
+    if (!targetAngles || !targetAngles[joint]) return null;
+    
+    const angles = targetAngles[joint];
+    return {
+      min: angles.min,
+      max: angles.max,
+      optimal: angles.optimal
+    };
+  };
+  
+  const angleInfo = getAngleInfo();
+  
+  return (
+    <div className="exercise-info">
+      <div className={`difficulty-badge ${getDifficultyClass(exercise.difficulty)}`}>
+        {getDifficultyText(exercise.difficulty)}
+      </div>
+      <h4>About this exercise</h4>
+      <div className="exercise-description">
+        {exercise.description}
+      </div>
+      
+      {angleInfo && (
+        <div className="angle-info">
+          <div className="angle-row">
+            <span className="angle-label">Starting Position:</span>
+            <span className="angle-values">{angleInfo.min}°</span>
+          </div>
+          <div className="angle-row">
+            <span className="angle-label">Ending Position:</span>
+            <span className="angle-values">{angleInfo.max}°</span>
+          </div>
+          {angleInfo.optimal && (
+            <div className="angle-row">
+              <span className="angle-label">Optimal Range:</span>
+              <span className="angle-values angle-optimal">
+                {angleInfo.optimal[0]}° - {angleInfo.optimal[1]}°
+              </span>
+            </div>
+          )}
+          <div className="angle-row">
+            <span className="angle-label">Movement:</span>
+            <span className="angle-values">{exercise.movementType}</span>
+          </div>
+          {exercise.injuryType && (
+            <div className="angle-row">
+              <span className="angle-label">Common for:</span>
+              <span className="angle-values">{exercise.injuryType.replace(/-/g, ' ')}</span>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // Create a main App component that uses PoseContext
 function MainApp() {
@@ -14,7 +104,7 @@ function MainApp() {
   const [showDebug, setShowDebug] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('upper');
   
-  //  Get setCurrentExercise from PoseContext
+  // Get setCurrentExercise from PoseContext
   const { setCurrentExercise: setPoseExercise, resetExercise } = usePose();
   
   const exerciseCategories = {
@@ -22,12 +112,27 @@ function MainApp() {
       name: 'Upper Body',
       subcategories: getUpperBodyExercisesByCategory()
     },
+    mid: {
+      name: 'Mid Body (Core & Spine)',
+      subcategories: getMidBodyExercisesByCategory()
+    },
+    lower: {
+      name: 'Lower Body',
+      subcategories: getLowerBodyExercisesByCategory()
+    }
   };
 
   const handleExerciseSelect = (exerciseId) => {
-    console.log('🔄 Selecting exercise:', exerciseId);
+    console.log('🔄 App.jsx - Selecting exercise:', exerciseId);
     
-    //  Update both local state AND PoseContext
+    // Verify exercise exists
+    const exercise = getExercise(exerciseId);
+    if (!exercise) {
+      console.error('Exercise not found:', exerciseId);
+      return;
+    }
+    
+    // Update both local state AND PoseContext
     setLocalExercise(exerciseId);
     setPoseExercise(exerciseId);
     
@@ -55,7 +160,7 @@ function MainApp() {
     console.log('🔄 Resetting session');
     setSessionActive(false);
     setLocalExercise(null);
-    resetExercise(); //  Reset in PoseContext too
+    resetExercise(); // Reset in PoseContext too
   };
 
   // Helper function to get session status
@@ -75,6 +180,8 @@ function MainApp() {
   // Helper function to format exercise name
   const formatExerciseName = (exerciseId) => {
     if (!exerciseId) return 'None Selected';
+    const exercise = getExercise(exerciseId);
+    if (exercise) return exercise.name;
     return exerciseId.split('-')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
@@ -96,7 +203,7 @@ function MainApp() {
               onChange={(e) => {
                 setSelectedCategory(e.target.value);
                 setLocalExercise(null); // Clear exercise when category changes
-                setPoseExercise(null); //  Also clear in PoseContext
+                setPoseExercise(null); // Also clear in PoseContext
               }}
               className="category-dropdown"
             >
@@ -119,7 +226,7 @@ function MainApp() {
       <div className="main-content">
         {/* Left Panel - Controls */}
         <div className="sidebar">
-          <div className="sidebar-section">
+          <div className={`sidebar-section ${localExercise ? 'has-exercise' : ''}`}>
             <h3>Select Exercise</h3>
             <div className="category-display">
               <h4>{exerciseCategories[selectedCategory]?.name}</h4>
@@ -130,6 +237,14 @@ function MainApp() {
                 category={selectedCategory}
               />
             </div>
+            
+            {/* Exercise Info Display */}
+            {localExercise && (
+              <ExerciseInfo 
+                exerciseId={localExercise} 
+                exercise={getExercise(localExercise)}
+              />
+            )}
           </div>
           
           <div className="sidebar-section">
@@ -167,6 +282,7 @@ function MainApp() {
             </div>
           </div>
         </div>
+        
         {/* Main Area - Camera and Feedback */}
         <div className="main-area">
           <div className="camera-section">
