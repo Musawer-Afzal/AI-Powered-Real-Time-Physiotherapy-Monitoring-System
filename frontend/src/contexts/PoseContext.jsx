@@ -147,14 +147,17 @@ export function usePose() {
 }
 
 // Enhanced angle calculation
+// Enhanced angle calculation for all exercises
 function calculateAllAngles(landmarks) {
   const angles = {};
   
   // Shoulder angles (abduction/flexion)
-  if (landmarks[23] && landmarks[11] && landmarks[13]) {
+  if (landmarks[11] && landmarks[13] && landmarks[23]) {
+    // Left shoulder angle: Hip - Shoulder - Elbow
     angles.leftShoulder = calculateAngle(landmarks[23], landmarks[11], landmarks[13]);
   }
-  if (landmarks[24] && landmarks[12] && landmarks[14]) {
+  if (landmarks[12] && landmarks[14] && landmarks[24]) {
+    // Right shoulder angle: Hip - Shoulder - Elbow
     angles.rightShoulder = calculateAngle(landmarks[24], landmarks[12], landmarks[14]);
   }
   
@@ -166,11 +169,13 @@ function calculateAllAngles(landmarks) {
     angles.rightElbow = calculateAngle(landmarks[12], landmarks[14], landmarks[16]);
   }
   
-  // Hip angles
+  // Hip angles (for pelvic tilt, bridge, straight leg raise)
   if (landmarks[11] && landmarks[23] && landmarks[25]) {
+    // Left hip angle: Shoulder - Hip - Knee
     angles.leftHip = calculateAngle(landmarks[11], landmarks[23], landmarks[25]);
   }
   if (landmarks[12] && landmarks[24] && landmarks[26]) {
+    // Right hip angle: Shoulder - Hip - Knee
     angles.rightHip = calculateAngle(landmarks[12], landmarks[24], landmarks[26]);
   }
   
@@ -182,16 +187,12 @@ function calculateAllAngles(landmarks) {
     angles.rightKnee = calculateAngle(landmarks[24], landmarks[26], landmarks[28]);
   }
   
-  // Neck angle (approximation)
-  if (landmarks[0] && landmarks[11] && landmarks[23]) {
-    angles.neck = calculateAngle(landmarks[0], landmarks[11], landmarks[23]);
-  }
+  // Also calculate average for convenience
+  angles.shoulder = (angles.leftShoulder + angles.rightShoulder) / 2;
+  angles.hip = (angles.leftHip + angles.rightHip) / 2;
+  angles.knee = (angles.leftKnee + angles.rightKnee) / 2;
+  angles.elbow = (angles.leftElbow + angles.rightElbow) / 2;
   
-  // Trunk lean (spine angle)
-  if (landmarks[11] && landmarks[23] && landmarks[25]) {
-    angles.trunk = calculateAngle(landmarks[11], landmarks[23], landmarks[25]);
-  }
-
   return angles;
 }
 

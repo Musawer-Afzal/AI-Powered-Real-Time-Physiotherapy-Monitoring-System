@@ -65,24 +65,31 @@ export class ExerciseAnalyzer {
   }
 
   // Simplified getPrimaryAngle - KEEP YOUR EXISTING WORKING VERSION
+  // Updated getPrimaryAngle with better joint detection
   getPrimaryAngle(angles) {
     const joint = this.exercise.joint;
-    const movement = this.exercise.movementType;
     
+    // Return the appropriate angle based on joint type
     switch (joint) {
       case 'shoulder':
-        if (movement.includes('abduction') || movement.includes('flexion')) {
-          // Use average of both shoulders or the more active one
-          const left = angles.leftShoulder || 0;
-          const right = angles.rightShoulder || 0;
-          return Math.max(left, right);
-        }
-        break;
+        // For shoulder exercises, use the more active shoulder
+        const leftShoulder = angles.leftShoulder || 0;
+        const rightShoulder = angles.rightShoulder || 0;
+        // Use the larger angle (more movement)
+        return Math.max(leftShoulder, rightShoulder);
         
       case 'elbow':
         const leftElbow = angles.leftElbow || 0;
         const rightElbow = angles.rightElbow || 0;
         return Math.max(leftElbow, rightElbow);
+        
+      case 'hip':
+        // For hip exercises (bridge, pelvic tilt, straight leg raise)
+        const leftHip = angles.leftHip || 0;
+        const rightHip = angles.rightHip || 0;
+        // For exercises like bridge, both hips move together
+        // Use the average
+        return (leftHip + rightHip) / 2;
         
       case 'knee':
         const leftKnee = angles.leftKnee || 0;
@@ -90,14 +97,12 @@ export class ExerciseAnalyzer {
         return Math.max(leftKnee, rightKnee);
         
       default:
-        // For other joints, try to find the angle
-        const jointKey = Object.keys(angles).find(k => 
-          k.toLowerCase().includes(joint.toLowerCase())
+        // Try to find a matching angle key
+        const matchingKey = Object.keys(angles).find(key => 
+          key.toLowerCase().includes(joint.toLowerCase())
         );
-        return jointKey ? angles[jointKey] : null;
+        return matchingKey ? angles[matchingKey] : null;
     }
-    
-    return null;
   }
 
   smoothAngle(angle) {
