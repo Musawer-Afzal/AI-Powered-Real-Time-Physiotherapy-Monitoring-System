@@ -1,17 +1,55 @@
 // App.jsx
+// App.jsx
 import { useState, useEffect } from 'react';
 import CameraView from './components/CameraView/CameraView';
 import ExerciseSelector from './components/ExerciseSelector/ExerciseSelector';
 import SessionControls from './components/SessionControls/SessionControls';
 import { PoseProvider, usePose } from './contexts/PoseContext';
-import { getUpperBodyExercisesByCategory, getUpperBodyExercise } from './config/exercises/upper-body';
-import { getMidBodyExercisesByCategory, getMidBodyExercise } from './config/exercises/mid-body';
-import { getLowerBodyExercisesByCategory, getLowerBodyExercise } from './config/exercises/lower-body';
+import { 
+  UPPER_BODY_EXERCISES,
+  getUpperBodyExercisesByCategory, 
+  getUpperBodyExercise 
+} from './config/exercises/upper-body';
+import { 
+  MID_BODY_EXERCISES,
+  getMidBodyExercisesByCategory, 
+  getMidBodyExercise 
+} from './config/exercises/mid-body';
+import { 
+  LOWER_BODY_EXERCISES,
+  getLowerBodyExercisesByCategory, 
+  getLowerBodyExercise 
+} from './config/exercises/lower-body';
 import './App.css';
 
 // Helper function to get exercise from any category
 const getExercise = (id) => {
-  return getUpperBodyExercise(id) || getMidBodyExercise(id) || getLowerBodyExercise(id);
+  console.log('🔍 Looking for exercise:', id);
+  
+  const upper = getUpperBodyExercise(id);
+  if (upper) {
+    console.log('✅ Found in upper body');
+    return upper;
+  }
+  
+  const mid = getMidBodyExercise(id);
+  if (mid) {
+    console.log('✅ Found in mid body');
+    return mid;
+  }
+  
+  const lower = getLowerBodyExercise(id);
+  if (lower) {
+    console.log('✅ Found in lower body');
+    return lower;
+  }
+  
+  console.error('❌ Exercise not found in any category:', id);
+  console.log('Available upper body exercises:', Object.keys(UPPER_BODY_EXERCISES || {}));
+  console.log('Available mid body exercises:', Object.keys(MID_BODY_EXERCISES || {}));
+  console.log('Available lower body exercises:', Object.keys(LOWER_BODY_EXERCISES || {}));
+  
+  return null;
 };
 
 // Exercise Info Component

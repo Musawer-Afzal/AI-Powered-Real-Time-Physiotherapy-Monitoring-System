@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { usePose } from '../../contexts/PoseContext';
 import { initializePoseDetection, startDetection, stopDetection } from '../../services/poseDetection';
+import { getUpperBodyExercise, getMidBodyExercise, getLowerBodyExercise } from '../../config/exercises/index';
 import './CameraView.css';
 
 export default function CameraView({ isActive, showLandmarks, showAngles, currentExercise }) {
@@ -8,11 +9,21 @@ export default function CameraView({ isActive, showLandmarks, showAngles, curren
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const poseRef = useRef(null);
-  const { updatePoseData, angles, setIsDetecting, analysis } = usePose(); // Added analysis
+  const { updatePoseData, angles, setIsDetecting, analysis } = usePose();
+  
+  // Helper function to get exercise from any category
+  const getExerciseById = (id) => {
+    if (!id) return null;
+    return getUpperBodyExercise(id) || getMidBodyExercise(id) || getLowerBodyExercise(id);
+  };
   
   // Add debugging for currentExercise
   useEffect(() => {
     console.log('📹 CameraView - Exercise changed:', currentExercise);
+    if (currentExercise) {
+      const exercise = getExerciseById(currentExercise);
+      console.log('Exercise config:', exercise);
+    }
   }, [currentExercise]);
 
   const [fps, setFps] = useState(0);
@@ -49,26 +60,6 @@ export default function CameraView({ isActive, showLandmarks, showAngles, curren
       stopCamera();
     };
   }, [isActive]);
-
-  // Helper function to get form score text and color
-  const getFormScoreInfo = (score) => {
-    const formScore = score || 50;
-    let text = 'Needs Work';
-    let colorClass = 'form-needs-work';
-    
-    if (formScore >= 90) {
-      text = 'Excellent';
-      colorClass = 'form-excellent';
-    } else if (formScore >= 75) {
-      text = 'Good';
-      colorClass = 'form-good';
-    } else if (formScore >= 60) {
-      text = 'Fair';
-      colorClass = 'form-fair';
-    }
-    
-    return { text, colorClass, value: formScore };
-  };
 
   const startCamera = async () => {
     if (isInitializedRef.current) {
@@ -180,71 +171,106 @@ export default function CameraView({ isActive, showLandmarks, showAngles, curren
   };
 
   const stopCamera = () => {
-  console.log('Stopping camera...');
-  
-  // 1. Stop pose detection first
-  if (poseRef.current) {
-    stopDetection(poseRef.current);
-    poseRef.current = null;
-  }
-  
-  // 2. Stop all video tracks
-  if (videoRef.current && videoRef.current.srcObject) {
-    const stream = videoRef.current.srcObject;
-    const tracks = stream.getTracks();
+    console.log('Stopping camera...');
     
-    tracks.forEach(track => {
-      console.log(`Stopping track: ${track.kind}`);
-      track.stop(); // This stops the track and turns off camera light
-    });
+    // 1. Stop pose detection first
+    if (poseRef.current) {
+      stopDetection(poseRef.current);
+      poseRef.current = null;
+    }
     
-    videoRef.current.srcObject = null;
-  }
-  
-  // 3. Clear canvas
-  if (canvasRef.current) {
-    const ctx = canvasRef.current.getContext('2d');
-    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-  }
-  
-  // 4. Reset states
-  setLandmarksCount(0);
-  setConfidence('Low');
-  setIsDetecting(false);
-  isInitializedRef.current = false;
-  
-  console.log('Camera fully stopped');
-};
+    // 2. Stop all video tracks
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject;
+      const tracks = stream.getTracks();
+      
+      tracks.forEach(track => {
+        console.log(`Stopping track: ${track.kind}`);
+        track.stop();
+      });
+      
+      videoRef.current.srcObject = null;
+    }
+    
+    // 3. Clear canvas
+    if (canvasRef.current) {
+      const ctx = canvasRef.current.getContext('2d');
+      ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    }
+    
+    // 4. Reset states
+    setLandmarksCount(0);
+    setConfidence('Low');
+    setIsDetecting(false);
+    isInitializedRef.current = false;
+    
+    console.log('Camera fully stopped');
+  };
 
-  // Get exercise-specific angles
+  // Helper function to get form score text and color
+  const getFormScoreInfo = (score) => {
+    const formScore = score || 50;
+    let text = 'Needs Work';
+    let colorClass = 'form-needs-work';
+    
+    if (formScore >= 90) {
+      text = 'Excellent';
+      colorClass = 'form-excellent';
+    } else if (formScore >= 75) {
+      text = 'Good';
+      colorClass = 'form-good';
+    } else if (formScore >= 60) {
+      text = 'Fair';
+      colorClass = 'form-fair';
+    }
+    
+    return { text, colorClass, value: formScore };
+  };
+
+  // Get exercise-specific angles based on the joint
   const getRelevantAngles = () => {
     if (!angles || !currentExercise) return {};
     
+    // Get the exercise configuration
+    const exercise = getExerciseById(currentExercise);
+    if (!exercise) {
+      console.log('Exercise not found:', currentExercise);
+      return {};
+    }
+    
+    const joint = exercise.joint;
     const relevantAngles = {};
     
-    switch (currentExercise) {
-      case 'elbow-flexion':
-        if (angles.leftElbow !== undefined) relevantAngles.leftElbow = angles.leftElbow;
-        if (angles.rightElbow !== undefined) relevantAngles.rightElbow = angles.rightElbow;
+    console.log(`Displaying angles for joint: ${joint}`);
+    
+    // Based on the exercise joint, return the relevant angles
+    switch (joint) {
+      case 'shoulder':
+        if (angles.leftShoulder !== undefined) relevantAngles['Left Shoulder'] = Math.round(angles.leftShoulder);
+        if (angles.rightShoulder !== undefined) relevantAngles['Right Shoulder'] = Math.round(angles.rightShoulder);
         break;
-      case 'shoulder-abduction':
-      case 'shoulder-flexion':
-      case 'shoulder-external-rotation':
-        if (angles.leftShoulder !== undefined) relevantAngles.leftShoulder = angles.leftShoulder;
-        if (angles.rightShoulder !== undefined) relevantAngles.rightShoulder = angles.rightShoulder;
+        
+      case 'elbow':
+        if (angles.leftElbow !== undefined) relevantAngles['Left Elbow'] = Math.round(angles.leftElbow);
+        if (angles.rightElbow !== undefined) relevantAngles['Right Elbow'] = Math.round(angles.rightElbow);
         break;
-      case 'knee-extension':
-        if (angles.leftKnee !== undefined) relevantAngles.leftKnee = angles.leftKnee;
-        if (angles.rightKnee !== undefined) relevantAngles.rightKnee = angles.rightKnee;
+        
+      case 'hip':
+        if (angles.leftHip !== undefined) relevantAngles['Left Hip'] = Math.round(angles.leftHip);
+        if (angles.rightHip !== undefined) relevantAngles['Right Hip'] = Math.round(angles.rightHip);
         break;
-      case 'squat':
-        if (angles.leftKnee !== undefined) relevantAngles.leftKnee = angles.leftKnee;
-        if (angles.rightKnee !== undefined) relevantAngles.rightKnee = angles.rightKnee;
-        if (angles.hip !== undefined) relevantAngles.hip = angles.hip;
+        
+      case 'knee':
+        if (angles.leftKnee !== undefined) relevantAngles['Left Knee'] = Math.round(angles.leftKnee);
+        if (angles.rightKnee !== undefined) relevantAngles['Right Knee'] = Math.round(angles.rightKnee);
         break;
+        
       default:
-        Object.keys(angles).slice(0, 4).forEach(key => {
-          relevantAngles[key] = angles[key];
+        // Fallback to showing all angles (limited to first 4)
+        const angleKeys = Object.keys(angles).slice(0, 4);
+        angleKeys.forEach(key => {
+          const displayName = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+          relevantAngles[displayName] = Math.round(angles[key]);
         });
     }
     
@@ -287,7 +313,7 @@ export default function CameraView({ isActive, showLandmarks, showAngles, curren
           </div>
         </div>
         
-        {/* NEW: Performance Stats */}
+        {/* Performance Stats */}
         <div className="performance-stats">
           <h4>Performance</h4>
           <div className="performance-grid">
@@ -312,9 +338,7 @@ export default function CameraView({ isActive, showLandmarks, showAngles, curren
             <div className="angles-grid">
               {Object.entries(relevantAngles).map(([joint, angle]) => (
                 <div key={joint} className="angle-item">
-                  <span className="joint-name">
-                    {joint.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                  </span>
+                  <span className="joint-name">{joint}</span>
                   <span className="angle-value">{angle}°</span>
                 </div>
               ))}

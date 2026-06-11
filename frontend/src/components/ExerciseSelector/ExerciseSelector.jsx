@@ -5,7 +5,7 @@ export default function ExerciseSelector({ selectedExercise, onSelect, disabled,
   const [isOpen, setIsOpen] = useState(false);
   const selectorRef = useRef(null);
   
-  // Get exercises based on category
+  // Get exercises based on category with CORRECT IDs matching your config files
   const getExercises = () => {
     if (category === 'upper') {
       return {
