@@ -228,22 +228,16 @@ export default function CameraView({ isActive, showLandmarks, showAngles, curren
   };
 
   // Get exercise-specific angles based on the joint
+  // Get exercise-specific angles based on the joint
   const getRelevantAngles = () => {
     if (!angles || !currentExercise) return {};
     
-    // Get the exercise configuration
     const exercise = getExerciseById(currentExercise);
-    if (!exercise) {
-      console.log('Exercise not found:', currentExercise);
-      return {};
-    }
+    if (!exercise) return {};
     
     const joint = exercise.joint;
     const relevantAngles = {};
     
-    console.log(`Displaying angles for joint: ${joint}`);
-    
-    // Based on the exercise joint, return the relevant angles
     switch (joint) {
       case 'shoulder':
         if (angles.leftShoulder !== undefined) relevantAngles['Left Shoulder'] = Math.round(angles.leftShoulder);
@@ -260,13 +254,17 @@ export default function CameraView({ isActive, showLandmarks, showAngles, curren
         if (angles.rightHip !== undefined) relevantAngles['Right Hip'] = Math.round(angles.rightHip);
         break;
         
+      case 'hipAbduction':
+        if (angles.leftHipAbduction !== undefined) relevantAngles['Left Hip Abduction'] = Math.round(angles.leftHipAbduction);
+        if (angles.rightHipAbduction !== undefined) relevantAngles['Right Hip Abduction'] = Math.round(angles.rightHipAbduction);
+        break;
+        
       case 'knee':
         if (angles.leftKnee !== undefined) relevantAngles['Left Knee'] = Math.round(angles.leftKnee);
         if (angles.rightKnee !== undefined) relevantAngles['Right Knee'] = Math.round(angles.rightKnee);
         break;
         
       default:
-        // Fallback to showing all angles (limited to first 4)
         const angleKeys = Object.keys(angles).slice(0, 4);
         angleKeys.forEach(key => {
           const displayName = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
