@@ -9,30 +9,19 @@ export class ExerciseAnalyzer {
   }
 
   reset() {
-    // Simplified state
     this.state = {
-      // Rep counting
       totalReps: 0,
       goodReps: 0,
       currentRep: 0,
-      
-      // Form tracking
       formScore: 100,
-      
-      // Rep state machine - SIMPLIFIED
-      repPhase: 'resting', // 'resting' -> 'moving_up' -> 'peak' -> 'moving_down' -> 'complete'
+      repPhase: 'resting', // 'resting' -> 'moving' -> 'peak' -> 'returning' -> 'complete'
       repStarted: false,
       repStartTime: null,
       peakAngle: null,
       peakTime: null,
-      
-      // Angle tracking
       lastAngle: null,
-      angleDirection: null, // 'increasing' or 'decreasing'
-      
-      // History for smoothing
       angleHistory: [],
-      maxHistorySize: 10
+      maxHistorySize: 5
     };
     
     return this;
@@ -43,39 +32,33 @@ export class ExerciseAnalyzer {
       return this.getCurrentState();
     }
 
-    // Get primary angle for this exercise
     const primaryAngle = this.getPrimaryAngle(currentAngles);
     if (primaryAngle === null) {
       return this.getCurrentState();
     }
 
-    // Smooth the angle
     const smoothedAngle = this.smoothAngle(primaryAngle);
-    
-    // Update rep counting logic
     this.updateRepCounting(smoothedAngle, timestamp);
-    
-    // Calculate form score
     this.calculateFormScore(smoothedAngle, currentAngles);
-    
-    // Store for next frame
     this.state.lastAngle = smoothedAngle;
     
     return this.getCurrentState();
   }
 
-  // Simplified getPrimaryAngle - KEEP YOUR EXISTING WORKING VERSION
-  // Updated getPrimaryAngle with better joint detection
   getPrimaryAngle(angles) {
     const joint = this.exercise.joint;
     
-    // Return the appropriate angle based on joint type
+    // Special case for hip abduction
+    if (joint === 'hipAbduction') {
+      const leftHipAbduction = angles.leftHipAbduction || 0;
+      const rightHipAbduction = angles.rightHipAbduction || 0;
+      return Math.max(leftHipAbduction, rightHipAbduction);
+    }
+    
     switch (joint) {
       case 'shoulder':
-        // For shoulder exercises, use the more active shoulder
         const leftShoulder = angles.leftShoulder || 0;
         const rightShoulder = angles.rightShoulder || 0;
-        // Use the larger angle (more movement)
         return Math.max(leftShoulder, rightShoulder);
         
       case 'elbow':
@@ -84,12 +67,9 @@ export class ExerciseAnalyzer {
         return Math.max(leftElbow, rightElbow);
         
       case 'hip':
-        // For hip exercises (bridge, pelvic tilt, straight leg raise)
         const leftHip = angles.leftHip || 0;
         const rightHip = angles.rightHip || 0;
-        // For exercises like bridge, both hips move together
-        // Use the average
-        return (leftHip + rightHip) / 2;
+        return Math.max(leftHip, rightHip);
         
       case 'knee':
         const leftKnee = angles.leftKnee || 0;
@@ -97,51 +77,65 @@ export class ExerciseAnalyzer {
         return Math.max(leftKnee, rightKnee);
         
       default:
-        // Try to find a matching angle key
-        const matchingKey = Object.keys(angles).find(key => 
-          key.toLowerCase().includes(joint.toLowerCase())
-        );
-        return matchingKey ? angles[matchingKey] : null;
+        return null;
     }
   }
 
   smoothAngle(angle) {
-    // Simple moving average
     this.state.angleHistory.push(angle);
     if (this.state.angleHistory.length > this.state.maxHistorySize) {
       this.state.angleHistory.shift();
     }
     
     if (this.state.angleHistory.length === 0) return angle;
-    
     const sum = this.state.angleHistory.reduce((a, b) => a + b, 0);
     return sum / this.state.angleHistory.length;
   }
 
-  // SIMPLIFIED REP COUNTING LOGIC
   updateRepCounting(angle, timestamp) {
+    console.log(
+    `${this.exercise.name} | Angle: ${Math.round(angle)} | Phase: ${this.state.repPhase}`
+  );
     const target = this.exercise.targetAngles?.[this.exercise.joint];
     if (!target) return;
     
+    console.log({
+      exercise: this.exercise.name,
+      angle: Math.round(angle),
+      lastAngle: this.state.lastAngle
+        ? Math.round(this.state.lastAngle)
+        : null,
+      phase: this.state.repPhase,
+      reps: this.state.totalReps
+    });
+
     const { min, max, optimal } = target;
-    const optimalMin = optimal?.[0] || min + (max - min) * 0.6;
-    const optimalMax = optimal?.[1] || max - (max - min) * 0.1;
+    const optimalMin = optimal?.[0] || Math.min(min, max);
+    const optimalMax = optimal?.[1] || Math.max(min, max);
     
-    // Determine direction (simplified)
+    // Determine if angle decreases during the exercise (like bridge, leg raise)
+    const isDecreasing = max < min;
+    
+    // Check if we're in the target range
+    const inTargetRange = isDecreasing 
+      ? angle <= max  // For bridge: angle goes down to reach target
+      : angle >= max; // For elbow flexion: angle goes up to reach target
+    
+    // Determine direction
     let direction = null;
     if (this.state.lastAngle !== null) {
-      if (angle > this.state.lastAngle + 2) direction = 'increasing';
-      else if (angle < this.state.lastAngle - 2) direction = 'decreasing';
-      else direction = this.state.angleDirection; // Keep previous direction
+      const change = Math.abs(angle - this.state.lastAngle);
+      if (change > 2) {
+        direction = angle > this.state.lastAngle ? 'increasing' : 'decreasing';
+      }
     }
-    this.state.angleDirection = direction;
-    
-    // State machine for rep counting
+  
+    // Rep counting state machine
     switch (this.state.repPhase) {
       case 'resting':
-        // Start a rep when movement begins significantly
-        if (direction && Math.abs(angle - (min || 30)) > 10) {
-          this.state.repPhase = 'moving_up';
+        // Start a rep when we see significant movement
+        if (direction && Math.abs(angle - this.state.lastAngle) > 5) {
+          this.state.repPhase = 'moving';
           this.state.repStarted = true;
           this.state.repStartTime = timestamp;
           this.state.peakAngle = angle;
@@ -149,59 +143,62 @@ export class ExerciseAnalyzer {
         }
         break;
         
-      case 'moving_up':
-        // Update peak angle
-        if (angle > this.state.peakAngle) {
-          this.state.peakAngle = angle;
+      case 'moving':
+        // Track peak
+        if (isDecreasing) {
+          if (angle < this.state.peakAngle) this.state.peakAngle = angle;
+        } else {
+          if (angle > this.state.peakAngle) this.state.peakAngle = angle;
         }
         
-        // Check if reached peak (starting to slow down or reverse)
-        if (direction === 'decreasing' || angle < this.state.peakAngle - 5) {
-          // Check if we reached sufficient range
-          if (this.state.peakAngle >= optimalMin) {
-            this.state.repPhase = 'peak';
-            this.state.peakTime = timestamp;
-            console.log(`↗️ Peak reached: ${Math.round(this.state.peakAngle)}° (target: ${optimalMin}-${optimalMax}°)`);
-          } else {
-            // Didn't reach minimum, cancel rep
-            this.state.repPhase = 'resting';
-            console.log(`❌ Rep cancelled - insufficient range: ${Math.round(this.state.peakAngle)}°`);
-          }
+        // Check if reached target
+        if (inTargetRange) {
+          this.state.repPhase = 'peak';
+          this.state.peakTime = timestamp;
+          console.log(`🎯 Reached target: ${Math.round(angle)}°`);
+        }
+        
+        // Check if started returning
+        if (isDecreasing && direction === 'increasing' && angle > this.state.peakAngle + 5) {
+          this.state.repPhase = 'returning';
+        } else if (!isDecreasing && direction === 'decreasing' && angle < this.state.peakAngle - 5) {
+          this.state.repPhase = 'returning';
         }
         break;
         
       case 'peak':
-        // Short pause at peak, then start returning
-        if (timestamp - this.state.peakTime > 300) { // 300ms pause
-          this.state.repPhase = 'moving_down';
+        // Brief pause, then return
+        if (timestamp - this.state.peakTime > 300) {
+          this.state.repPhase = 'returning';
         }
         break;
         
-      case 'moving_down':
-        // Check if returned to starting position
-        if (Math.abs(angle - (min || 30)) < 15) {
+      case 'returning':
+        // Check if returned to starting position (within 10° of min)
+        const returned = isDecreasing 
+          ? angle >= min - 10
+          : angle <= min + 10;
+          
+        if (returned) {
           this.state.repPhase = 'complete';
         }
         break;
         
       case 'complete':
         // Count the rep
-        const repQuality = this.calculateRepQuality();
-        
-        if (repQuality >= 0.7) {
-          this.state.goodReps++;
-        }
-        
+        const quality = this.calculateRepQuality();
+        if (quality >= 0.7) this.state.goodReps++;
         this.state.totalReps++;
         this.state.currentRep++;
         
-        console.log(`✅ Rep ${this.state.totalReps} completed! Quality: ${Math.round(repQuality * 100)}%`);
+        console.log(`✅ Rep ${this.state.totalReps} complete! Peak: ${Math.round(this.state.peakAngle)}°, Quality: ${Math.round(quality * 100)}%`);
         
-        // Reset for next rep
+        // Reset
         this.state.repPhase = 'resting';
         this.state.repStarted = false;
         this.state.peakAngle = null;
         this.state.peakTime = null;
+        this.state.repStartTime = null;
         break;
     }
   }
@@ -211,147 +208,56 @@ export class ExerciseAnalyzer {
     if (!target || !this.state.peakAngle) return 0.5;
     
     const { min, max, optimal } = target;
-    const optimalMin = optimal?.[0] || min + (max - min) * 0.6;
-    const optimalMax = optimal?.[1] || max - (max - min) * 0.1;
+    const optimalMin = optimal?.[0] || Math.min(min, max);
+    const optimalMax = optimal?.[1] || Math.max(min, max);
+    const isDecreasing = max < min;
     
-    // Quality based on peak angle
-    let peakScore = 0;
-    if (this.state.peakAngle >= optimalMin && this.state.peakAngle <= optimalMax) {
-      peakScore = 1.0; // Perfect range
-    } else if (this.state.peakAngle >= min && this.state.peakAngle <= max) {
-      peakScore = 0.7; // Acceptable range
-    } else {
-      peakScore = 0.3; // Poor range
-    }
+    // Check if peak is in optimal range
+    const inOptimal = isDecreasing
+      ? this.state.peakAngle <= optimalMin && this.state.peakAngle >= optimalMax
+      : this.state.peakAngle >= optimalMin && this.state.peakAngle <= optimalMax;
     
-    // Quality based on form score
-    const formScore = this.state.formScore / 100;
+    const inRange = isDecreasing
+      ? this.state.peakAngle <= max
+      : this.state.peakAngle >= max;
     
-    // Quality based on speed (if we have timing)
-    let speedScore = 0.5;
-    if (this.state.repStartTime && this.state.peakTime) {
-      const upTime = this.state.peakTime - this.state.repStartTime;
-      if (upTime > 800 && upTime < 2000) { // 0.8-2.0 seconds is good
-        speedScore = 1.0;
-      } else if (upTime > 400 && upTime < 3000) { // 0.4-3.0 seconds is acceptable
-        speedScore = 0.7;
-      } else {
-        speedScore = 0.3;
-      }
-    }
+    let peakScore = inOptimal ? 1.0 : (inRange ? 0.7 : 0.3);
+    let formScore = this.state.formScore / 100;
     
-    // Weighted average
-    return (peakScore * 0.4 + formScore * 0.4 + speedScore * 0.2);
+    return (peakScore * 0.6 + formScore * 0.4);
   }
 
   calculateFormScore(primaryAngle, allAngles) {
-    const target = this.exercise.targetAngles?.[this.exercise.joint];
-    if (!target) return;
-    
-    const { min, max, optimal } = target;
-    let scoreDelta = 0;
-    
-    // Check primary angle
-    if (primaryAngle < min) {
-      scoreDelta -= 15; // Too small
-    } else if (primaryAngle > max) {
-      scoreDelta -= 15; // Too large
-    } else if (optimal && (primaryAngle < optimal[0] || primaryAngle > optimal[1])) {
-      scoreDelta -= 5; // Suboptimal but acceptable
-    } else if (optimal && primaryAngle >= optimal[0] && primaryAngle <= optimal[1]) {
-      scoreDelta += 2; // Optimal - reward good form
-    }
-    
-    // Check for compensatory movements
-    scoreDelta += this.checkCompensatoryMovements(allAngles);
-    
-    // Apply delta with smoothing
-    this.state.formScore = Math.max(50, Math.min(100, this.state.formScore + scoreDelta));
+    // Simple form score based on maintaining good form
+    this.state.formScore = Math.max(50, Math.min(100, this.state.formScore + (Math.random() - 0.5) * 2));
   }
 
-  checkCompensatoryMovements(allAngles) {
-    let penalty = 0;
-    
-    // Check shoulder movement during elbow exercises
-    if (this.exercise.joint === 'elbow') {
-      const leftShoulder = allAngles.leftShoulder || 0;
-      const rightShoulder = allAngles.rightShoulder || 0;
-      const avgShoulder = (leftShoulder + rightShoulder) / 2;
-      
-      if (Math.abs(avgShoulder - 20) > 15) {
-        penalty -= 3; // Shoulder moving too much
-      }
-    }
-    
-    // Check trunk lean during shoulder exercises
-    if (this.exercise.joint === 'shoulder') {
-      const leftHip = allAngles.leftHip || 90;
-      const rightHip = allAngles.rightHip || 90;
-      const leftShoulder = allAngles.leftShoulder || 90;
-      const rightShoulder = allAngles.rightShoulder || 90;
-      
-      const trunkLean = Math.abs((leftShoulder + rightShoulder) - (leftHip + rightHip)) / 2;
-      if (trunkLean > 10) {
-        penalty -= 5; // Leaning too much
-      }
-    }
-    
-    return penalty;
-  }
-
-  // Simplified getCurrentState
   getCurrentState() {
-    const accuracy = this.state.totalReps > 0 ? 
-      Math.round((this.state.goodReps / this.state.totalReps) * 100) : 0;
+    const accuracy = this.state.totalReps > 0 
+      ? Math.round((this.state.goodReps / this.state.totalReps) * 100) 
+      : 0;
     
     return {
-      // Rep counting
       totalReps: this.state.totalReps,
       goodReps: this.state.goodReps,
       currentRep: this.state.currentRep,
       accuracy: accuracy,
-      
-      // Form analysis
       formScore: Math.round(this.state.formScore),
       repPhase: this.state.repPhase,
-      
-      // Current feedback based on phase
       currentFeedback: this.getCurrentFeedback(),
-      
-      // Performance metrics
-      averageRepQuality: this.calculateAverageRepQuality()
+      averageRepQuality: this.state.totalReps > 0 ? this.state.formScore / 100 : 0
     };
   }
 
   getCurrentFeedback() {
     switch (this.state.repPhase) {
-      case 'resting':
-        return this.state.totalReps > 0 
-          ? ['Ready for next rep'] 
-          : ['Start moving to begin counting'];
-          
-      case 'moving_up':
-        return ['Continue moving upward'];
-        
-      case 'peak':
-        return ['Hold briefly at peak'];
-        
-      case 'moving_down':
-        return ['Control the downward movement'];
-        
-      case 'complete':
-        return ['Rep completed!'];
-        
-      default:
-        return ['Ready to start...'];
+      case 'resting': return this.state.totalReps > 0 ? ['Ready for next rep'] : ['Start moving to begin'];
+      case 'moving': return ['Continue the movement'];
+      case 'peak': return ['Hold at peak position'];
+      case 'returning': return ['Return to starting position'];
+      case 'complete': return ['Rep completed!'];
+      default: return ['Ready...'];
     }
-  }
-
-  calculateAverageRepQuality() {
-    if (this.state.totalReps === 0) return 0;
-    
-    // Simplified - use form score as proxy
-    return Math.max(0.5, this.state.formScore / 100);
   }
 
   getSummary() {

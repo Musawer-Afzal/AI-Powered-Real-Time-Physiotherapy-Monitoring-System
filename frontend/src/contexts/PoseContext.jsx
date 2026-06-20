@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { createExerciseAnalyzer } from '../services/analysis/ExerciseAnalyzer';
-import { getUpperBodyExercise } from '../config/exercises/upper-body';
+import { getExercise } from '../config/exercises/index';
 
 const PoseContext = createContext();
 
@@ -31,22 +31,31 @@ const updatePoseData = useCallback((landmarks) => {
 
   setState(prev => {
     const angles = calculateAllAngles(landmarks);
+
+    console.log({
+      hasLandmarks: !!landmarks,
+      hasAnalyzer: !!prev.exerciseAnalyzer,
+      currentExercise: prev.currentExercise
+    });
+
     let analysis = null;
-    
-    // If we have an exercise analyzer, analyze the frame
+
     if (prev.exerciseAnalyzer && prev.currentExercise) {
       try {
-        analysis = prev.exerciseAnalyzer.analyzeFrame(angles, Date.now());
-        
-        // Log rep counting events
-        if (analysis.totalReps !== prev.analysis?.totalReps) {
-          console.log(`🎯 NEW REP COUNTED! Total: ${analysis.totalReps}`);
+        analysis = prev.exerciseAnalyzer.analyzeFrame(
+          angles,
+          Date.now()
+        );
+
+        if (
+          analysis &&
+          analysis.totalReps !== prev.analysis?.totalReps
+        ) {
+          console.log(
+            `🎯 NEW REP COUNTED! Total: ${analysis.totalReps}`
+          );
         }
-        
-        // Log form score changes
-        if (prev.analysis && Math.abs(analysis.formScore - prev.analysis.formScore) > 5) {
-          console.log(`📊 Form score: ${prev.analysis.formScore}% → ${analysis.formScore}%`);
-        }
+
       } catch (error) {
         console.error('❌ Error in analysis:', error);
       }
@@ -63,6 +72,8 @@ const updatePoseData = useCallback((landmarks) => {
 }, []);
 
   const setCurrentExercise = useCallback((exerciseId) => {
+    console.log('SET CURRENT EXERCISE CALLED:', exerciseId);
+
     if (!exerciseId) {
       setState(prev => ({
         ...prev,
@@ -73,17 +84,17 @@ const updatePoseData = useCallback((landmarks) => {
       return;
     }
 
-    const exerciseConfig = getUpperBodyExercise(exerciseId);
+    const exerciseConfig = getExercise(exerciseId);
+
     if (!exerciseConfig) {
       console.error(`Exercise not found: ${exerciseId}`);
       return;
     }
 
     const analyzer = createExerciseAnalyzer(exerciseConfig);
-    
-    // Reset the analyzer to start fresh
+
     analyzer.reset();
-    
+
     setState(prev => ({
       ...prev,
       currentExercise: exerciseId,
@@ -97,9 +108,9 @@ const updatePoseData = useCallback((landmarks) => {
         formScoreHistory: []
       }
     }));
-    
+
     console.log(`✅ Exercise analyzer created for: ${exerciseConfig.name}`);
-    console.log(`🎯 Target angles:`, exerciseConfig.targetAngles);
+    console.log('🎯 Target angles:', exerciseConfig.targetAngles);
   }, []);
 
   const resetExercise = useCallback(() => {
@@ -153,11 +164,9 @@ function calculateAllAngles(landmarks) {
   
   // Shoulder angles (abduction/flexion)
   if (landmarks[11] && landmarks[13] && landmarks[23]) {
-    // Left shoulder angle: Hip - Shoulder - Elbow
     angles.leftShoulder = calculateAngle(landmarks[23], landmarks[11], landmarks[13]);
   }
   if (landmarks[12] && landmarks[14] && landmarks[24]) {
-    // Right shoulder angle: Hip - Shoulder - Elbow
     angles.rightShoulder = calculateAngle(landmarks[24], landmarks[12], landmarks[14]);
   }
   
@@ -171,12 +180,21 @@ function calculateAllAngles(landmarks) {
   
   // Hip angles (for pelvic tilt, bridge, straight leg raise)
   if (landmarks[11] && landmarks[23] && landmarks[25]) {
-    // Left hip angle: Shoulder - Hip - Knee
     angles.leftHip = calculateAngle(landmarks[11], landmarks[23], landmarks[25]);
   }
   if (landmarks[12] && landmarks[24] && landmarks[26]) {
-    // Right hip angle: Shoulder - Hip - Knee
     angles.rightHip = calculateAngle(landmarks[12], landmarks[24], landmarks[26]);
+  }
+  
+  // Hip abduction angle (vertical movement of leg when lying on side)
+  // This calculates the angle of the leg relative to vertical
+  if (landmarks[23] && landmarks[25] && landmarks[27]) {
+    // Left hip abduction: angle between vertical and leg
+    angles.leftHipAbduction = calculateHipAbductionAngle(landmarks[23], landmarks[25]);
+  }
+  if (landmarks[24] && landmarks[26] && landmarks[28]) {
+    // Right hip abduction: angle between vertical and leg
+    angles.rightHipAbduction = calculateHipAbductionAngle(landmarks[24], landmarks[26]);
   }
   
   // Knee angles
@@ -194,6 +212,21 @@ function calculateAllAngles(landmarks) {
   angles.elbow = (angles.leftElbow + angles.rightElbow) / 2;
   
   return angles;
+}
+
+function calculateHipAbductionAngle(hip, knee) {
+  // Calculate the angle of the leg relative to vertical (straight down)
+  // This gives us the abduction angle when lying on side
+  const dx = knee.x - hip.x;
+  const dy = knee.y - hip.y;
+  
+  // Angle relative to vertical (y-axis)
+  // When leg is straight down, angle is 0
+  // When leg is lifted sideways, angle increases
+  const angleRad = Math.atan2(Math.abs(dx), Math.abs(dy));
+  const angleDeg = angleRad * 180 / Math.PI;
+  
+  return Math.round(angleDeg);
 }
 
 function calculateAngle(a, b, c) {
