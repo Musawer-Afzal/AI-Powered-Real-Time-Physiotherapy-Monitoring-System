@@ -23,24 +23,33 @@ import {
 import './App.css';
 
 // Helper function to get exercise from any category
+const loggedExercises = new Set();
+
 const getExercise = (id) => {
-  console.log('🔍 Looking for exercise:', id);
-  
   const upper = getUpperBodyExercise(id);
   if (upper) {
-    console.log('✅ Found in upper body');
+    if (!loggedExercises.has(id)) {
+      console.log(`✅ Found ${id} in upper body`);
+      loggedExercises.add(id);
+    }
     return upper;
   }
-  
+
   const mid = getMidBodyExercise(id);
   if (mid) {
-    console.log('✅ Found in mid body');
+    if (!loggedExercises.has(id)) {
+      console.log(`✅ Found ${id} in mid body`);
+      loggedExercises.add(id);
+    }
     return mid;
   }
-  
+
   const lower = getLowerBodyExercise(id);
   if (lower) {
-    console.log('✅ Found in lower body');
+    if (!loggedExercises.has(id)) {
+      console.log(`✅ Found ${id} in lower body`);
+      loggedExercises.add(id);
+    }
     return lower;
   }
   
