@@ -3,7 +3,7 @@ export const MID_BODY_EXERCISES = {
   'pelvic-tilt': {
     id: 'pelvic-tilt',
     name: 'Pelvic Tilt',
-    description: 'Lie on your back with knees bent. Flatten your lower back against the floor by tightening your abdominal muscles and tilting your pelvis.',
+    description: 'Lie on your back with knees bent (feet flat on floor, knees at about 90°). Flatten your lower back against the floor by tightening your abdominal muscles and tilting your pelvis backward.',
     difficulty: 'beginner',
     bodyRegion: 'mid',
     joint: 'hip',
@@ -11,16 +11,16 @@ export const MID_BODY_EXERCISES = {
     injuryType: 'lower-back-pain',
     targetAngles: {
       hip: {
-        min: 160,
+        min: 165,
         max: 180,
-        optimal: [170, 180]
+        optimal: [175, 180]
       }
     },
     repCounting: {
       type: 'angle-threshold',
       joint: 'hip',
       minAngle: 165,
-      maxAngle: 180,
+      maxAngle: 178,
       direction: 'tilt-return'
     }
   },
@@ -28,7 +28,7 @@ export const MID_BODY_EXERCISES = {
   'bridge': {
     id: 'bridge',
     name: 'Supine Bridge',
-    description: 'Lie on your back with knees bent. Lift your hips upward while keeping shoulders on the floor.',
+    description: 'Lie on your back with knees bent (feet flat on floor, knees at about 90°). Lift your hips upward while keeping shoulders on the floor.',
     difficulty: 'beginner',
     bodyRegion: 'mid',
     joint: 'hip',
@@ -36,16 +36,16 @@ export const MID_BODY_EXERCISES = {
     injuryType: 'lower-back-pain',
     targetAngles: {
       hip: {
-        min: 160,
-        max: 180,
-        optimal: [170, 180]
+        min: 170,
+        max: 130,
+        optimal: [130, 150]
       }
     },
     repCounting: {
       type: 'angle-threshold',
       joint: 'hip',
-      minAngle: 170,
-      maxAngle: 180,
+      minAngle: 165,
+      maxAngle: 140,
       direction: 'up-down'
     }
   }

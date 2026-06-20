@@ -1,34 +1,72 @@
-// Export all exercises
-export { UPPER_BODY_EXERCISES, getUpperBodyExercise, getUpperBodyExercisesByCategory } from './upper-body';
-export { MID_BODY_EXERCISES, getMidBodyExercise, getMidBodyExercisesByCategory } from './mid-body';
-export { LOWER_BODY_EXERCISES, getLowerBodyExercise, getLowerBodyExercisesByCategory } from './lower-body';
+// Import all exercises first
+import {
+  UPPER_BODY_EXERCISES,
+  getUpperBodyExercise,
+  getUpperBodyExercisesByCategory
+} from './upper-body';
 
-// Combined getter for any exercise
+import {
+  MID_BODY_EXERCISES,
+  getMidBodyExercise,
+  getMidBodyExercisesByCategory
+} from './mid-body';
+
+import {
+  LOWER_BODY_EXERCISES,
+  getLowerBodyExercise,
+  getLowerBodyExercisesByCategory
+} from './lower-body';
+
+
+// Export everything
+export {
+  UPPER_BODY_EXERCISES,
+  getUpperBodyExercise,
+  getUpperBodyExercisesByCategory,
+
+  MID_BODY_EXERCISES,
+  getMidBodyExercise,
+  getMidBodyExercisesByCategory,
+
+  LOWER_BODY_EXERCISES,
+  getLowerBodyExercise,
+  getLowerBodyExercisesByCategory
+};
+
+
+// Combined getter
 export const getExercise = (id) => {
-  // Try to get from upper body
-  try {
-    const upper = getUpperBodyExercise(id);
-    if (upper) return upper;
-  } catch (e) {
-    console.log('Not in upper body:', id);
+
+  console.log("🔎 Searching exercise in index:", id);
+
+
+  const upper = getUpperBodyExercise(id);
+  if (upper) {
+    console.log("✅ Found in upper body");
+    return upper;
   }
-  
-  // Try to get from mid body
-  try {
-    const mid = getMidBodyExercise(id);
-    if (mid) return mid;
-  } catch (e) {
-    console.log('Not in mid body:', id);
+
+
+  const mid = getMidBodyExercise(id);
+  if (mid) {
+    console.log("✅ Found in mid body");
+    return mid;
   }
-  
-  // Try to get from lower body
-  try {
-    const lower = getLowerBodyExercise(id);
-    if (lower) return lower;
-  } catch (e) {
-    console.log('Not in lower body:', id);
+
+
+  const lower = getLowerBodyExercise(id);
+  if (lower) {
+    console.log("✅ Found in lower body");
+    return lower;
   }
-  
-  console.error('Exercise not found:', id);
+
+
+  console.error("❌ Exercise not found:", id);
+
+  console.log(
+    "Available mid exercises:",
+    Object.keys(MID_BODY_EXERCISES)
+  );
+
   return null;
 };

@@ -3,7 +3,7 @@ export const LOWER_BODY_EXERCISES = {
   'straight-leg-raise': {
     id: 'straight-leg-raise',
     name: 'Straight Leg Raise',
-    description: 'Lie on your back with one knee bent. Keep the other leg straight and lift it to hip height.',
+    description: 'Lie on your back with one knee bent (foot flat on floor). Keep the other leg straight and lift it to about 45 degrees.',
     difficulty: 'beginner',
     bodyRegion: 'lower',
     joint: 'hip',
@@ -11,16 +11,16 @@ export const LOWER_BODY_EXERCISES = {
     injuryType: 'knee-replacement',
     targetAngles: {
       hip: {
-        min: 0,
-        max: 60,
-        optimal: [45, 60]
+        min: 175,
+        max: 135,
+        optimal: [135, 155]
       }
     },
     repCounting: {
       type: 'angle-threshold',
       joint: 'hip',
-      minAngle: 20,
-      maxAngle: 55,
+      minAngle: 170,
+      maxAngle: 145,
       direction: 'up-down'
     }
   },
@@ -28,7 +28,7 @@ export const LOWER_BODY_EXERCISES = {
   'knee-flexion': {
     id: 'knee-flexion',
     name: 'Knee Flexion',
-    description: 'Bend and straighten your knee while seated or lying down.',
+    description: 'Lie on your back with leg straight. Slowly bend your knee by sliding your heel toward your buttocks.',
     difficulty: 'beginner',
     bodyRegion: 'lower',
     joint: 'knee',
@@ -36,16 +36,16 @@ export const LOWER_BODY_EXERCISES = {
     injuryType: 'knee-replacement',
     targetAngles: {
       knee: {
-        min: 0,
-        max: 135,
-        optimal: [100, 130]
+        min: 175,
+        max: 140,
+        optimal: [120, 150]
       }
     },
     repCounting: {
       type: 'angle-threshold',
       joint: 'knee',
-      minAngle: 20,
-      maxAngle: 125,
+      minAngle: 175,
+      maxAngle: 140,
       direction: 'bend-straighten'
     }
   },
@@ -53,7 +53,7 @@ export const LOWER_BODY_EXERCISES = {
   'hip-abduction': {
     id: 'hip-abduction',
     name: 'Hip Abduction',
-    description: 'Lie on your side. Lift your top leg upward while keeping it straight.',
+    description: 'Lie on your side with legs straight and stacked. Lift your top leg upward while keeping it straight and body stable.',
     difficulty: 'beginner',
     bodyRegion: 'lower',
     joint: 'hip',
@@ -62,15 +62,15 @@ export const LOWER_BODY_EXERCISES = {
     targetAngles: {
       hip: {
         min: 0,
-        max: 45,
-        optimal: [30, 45]
+        max: 30,
+        optimal: [20, 30]
       }
     },
     repCounting: {
       type: 'angle-threshold',
       joint: 'hip',
-      minAngle: 15,
-      maxAngle: 40,
+      minAngle: 5,
+      maxAngle: 20,
       direction: 'up-down'
     }
   }

@@ -86,16 +86,16 @@ export const UPPER_BODY_EXERCISES = {
     injuryType: 'tennis-elbow',
     targetAngles: {
       elbow: {
-        min: 20,
-        max: 150,
-        optimal: [70, 140]
+        min: 160,
+        max: 60,
+        optimal: [70, 90]
       }
     },
     repCounting: {
       type: 'angle-threshold',
       joint: 'elbow',
-      minAngle: 30,
-      maxAngle: 140,
+      minAngle: 140,
+      maxAngle: 70,
       direction: 'bend-straighten'
     }
   }
