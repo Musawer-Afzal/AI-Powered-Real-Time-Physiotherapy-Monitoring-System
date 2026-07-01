@@ -22,32 +22,25 @@ import Users from "./pages/admin/Users";
 
 import ProtectedRoute from "./components/layout/ProtectedRoute";
 import NotFound from "./pages/Common/NotFound";
-
 import PatientLayout from "./components/patient/PatientLayout";
 
 export default function App() {
-
     return (
-
             <Routes>
-
                 <Route
                     path="/"
                     element={<Navigate to="/login" />}
                 />
-
                 <Route
                     path="/login"
                     element={<Login />}
                 />
-
                 <Route
                     path="/register"
                     element={<Register />}
                 />
 
                 {/* PATIENT */}
-
                 <Route
                     path="/patient"
                     element={
@@ -56,22 +49,18 @@ export default function App() {
                         </ProtectedRoute>
                     }
                   >
-
                     <Route
                         path="dashboard"
                         element={<PatientDashboard />}
                     />
-
                     <Route
                         path="exercise"
                         element={<Exercise />}
                     />
-
                     <Route
                         path="progress"
                         element={<Progress />}
                     />
-
                     <Route
                         path="profile"
                         element={<Profile />}
@@ -80,7 +69,6 @@ export default function App() {
                 </Route>
 
                 {/* Therapist */}
-
                 <Route
                     path="/therapist/dashboard"
                     element={
@@ -89,7 +77,6 @@ export default function App() {
                         </ProtectedRoute>
                     }
                 />
-
                 <Route
                     path="/therapist/patients"
                     element={
@@ -98,7 +85,6 @@ export default function App() {
                         </ProtectedRoute>
                     }
                 />
-
                 <Route
                     path="/therapist/patient/:id"
                     element={
@@ -109,7 +95,6 @@ export default function App() {
                 />
 
                 {/* ADMIN */}
-
                 <Route
                     path="/admin/dashboard"
                     element={
@@ -118,7 +103,6 @@ export default function App() {
                         </ProtectedRoute>
                     }
                 />
-
                 <Route
                     path="/admin/users"
                     element={
@@ -127,14 +111,10 @@ export default function App() {
                         </ProtectedRoute>
                     }
                 />
-
                 <Route
                     path="*"
                     element={<NotFound />}
                 />
-
             </Routes>
-
     )
-
 }
