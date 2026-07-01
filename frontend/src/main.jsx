@@ -1,13 +1,20 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { PoseProvider } from './contexts/PoseContext'
-import './index.css'
-import App from './App.jsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import { PoseProvider } from "./contexts/PoseContext";
+import { AuthProvider } from "./contexts/AuthContext";
+import "./index.css";
+import App from "./App";
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <PoseProvider>
-      <App />
-    </PoseProvider>
-  </StrictMode>,
-)
+
+createRoot(document.getElementById("root")).render(
+    <StrictMode>
+        <BrowserRouter>
+            <AuthProvider>
+                <PoseProvider>
+                    <App />
+                </PoseProvider>
+            </AuthProvider>
+        </BrowserRouter>
+    </StrictMode>
+);
