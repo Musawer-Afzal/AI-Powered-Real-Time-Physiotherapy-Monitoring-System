@@ -37,6 +37,11 @@ export class ExerciseAnalyzer {
       return this.getCurrentState();
     }
 
+    console.log({
+      joint: this.exercise.joint,
+      target: this.exercise.targetAngles,
+      primaryAngle: primaryAngle
+    });
     const smoothedAngle = this.smoothAngle(primaryAngle);
     this.updateRepCounting(smoothedAngle, timestamp);
     this.calculateFormScore(smoothedAngle, currentAngles);
@@ -50,9 +55,15 @@ export class ExerciseAnalyzer {
     
     // Special case for hip abduction
     if (joint === 'hipAbduction') {
-      const leftHipAbduction = angles.leftHipAbduction || 0;
-      const rightHipAbduction = angles.rightHipAbduction || 0;
-      return Math.max(leftHipAbduction, rightHipAbduction);
+      const leftHipAbduction = angles.leftHipAbduction;
+      const rightHipAbduction = angles.rightHipAbduction;
+
+      if (leftHipAbduction !== undefined && rightHipAbduction !== undefined) {
+        const result = Math.min(leftHipAbduction,rightHipAbduction);
+        return result;
+      }
+
+      return leftHipAbduction ?? rightHipAbduction ?? null;
     }
     
     switch (joint) {
@@ -64,7 +75,15 @@ export class ExerciseAnalyzer {
       case 'elbow':
         const leftElbow = angles.leftElbow || 0;
         const rightElbow = angles.rightElbow || 0;
-        return Math.max(leftElbow, rightElbow);
+
+        console.log(
+          'LEFT ELBOW:',
+          Math.round(leftElbow),
+          'RIGHT ELBOW:',
+          Math.round(rightElbow)
+        );
+
+        return Math.min(leftElbow, rightElbow);
         
       case 'hip':
         const leftHip = angles.leftHip || 0;
@@ -93,11 +112,13 @@ export class ExerciseAnalyzer {
   }
 
   updateRepCounting(angle, timestamp) {
-    console.log(
-    `${this.exercise.name} | Angle: ${Math.round(angle)} | Phase: ${this.state.repPhase}`
-  );
     const target = this.exercise.targetAngles?.[this.exercise.joint];
     if (!target) return;
+
+    console.log('-------------------------');
+    console.log('ANGLE:', Math.round(angle));
+    console.log('PHASE:', this.state.repPhase);
+    console.log('TARGET:', target);
     
     console.log({
       exercise: this.exercise.name,
@@ -117,9 +138,17 @@ export class ExerciseAnalyzer {
     const isDecreasing = max < min;
     
     // Check if we're in the target range
-    const inTargetRange = isDecreasing 
-      ? angle <= max  // For bridge: angle goes down to reach target
-      : angle >= max; // For elbow flexion: angle goes up to reach target
+    const inTargetRange =
+      angle >= optimalMin &&
+      angle <= optimalMax;
+
+      console.log({
+        angle: Math.round(angle),
+        min,
+        max,
+        isDecreasing,
+        inTargetRange
+      });
     
     // Determine direction
     let direction = null;
@@ -133,17 +162,50 @@ export class ExerciseAnalyzer {
     // Rep counting state machine
     switch (this.state.repPhase) {
       case 'resting':
-        // Start a rep when we see significant movement
-        if (direction && Math.abs(angle - this.state.lastAngle) > 5) {
-          this.state.repPhase = 'moving';
-          this.state.repStarted = true;
-          this.state.repStartTime = timestamp;
-          this.state.peakAngle = angle;
-          console.log(`▶️ Rep started at angle: ${Math.round(angle)}°`);
+        if (isDecreasing) {
+          // Hip abduction / bridge style movement
+          if (
+            direction === 'decreasing' &&
+            angle < min - 5
+          ) {
+            this.state.repPhase = 'moving';
+            this.state.repStarted = true;
+            this.state.repStartTime = timestamp;
+            this.state.peakAngle = angle;
+
+            console.log(
+              `▶️ Rep started at angle: ${Math.round(angle)}°`
+            );
+          }
+
+        } else {
+
+          // Elbow flexion style movement
+          if (
+            direction === 'increasing' &&
+            angle > min + 5
+          ) {
+            this.state.repPhase = 'moving';
+            this.state.repStarted = true;
+            this.state.repStartTime = timestamp;
+            this.state.peakAngle = angle;
+
+            console.log(
+              `▶️ Rep started at angle: ${Math.round(angle)}°`
+            );
+          }
         }
         break;
         
       case 'moving':
+        console.log(
+          `MOVING | angle=${Math.round(angle)} | peak=${Math.round(this.state.peakAngle || 0)}`
+        );
+
+        console.log({
+          angle,
+          peakAngle: this.state.peakAngle
+        });
         // Track peak
         if (isDecreasing) {
           if (angle < this.state.peakAngle) this.state.peakAngle = angle;
@@ -178,7 +240,11 @@ export class ExerciseAnalyzer {
         const returned = isDecreasing 
           ? angle >= min - 10
           : angle <= min + 10;
-          
+        console.log({
+          phase: 'returning',
+          angle: Math.round(angle),
+          returned
+        });
         if (returned) {
           this.state.repPhase = 'complete';
         }
