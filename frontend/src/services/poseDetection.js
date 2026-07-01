@@ -89,7 +89,7 @@ export function initializePoseDetection(videoRef, canvasRef, onResults) {
 }
 
 export async function startDetection(videoRef, canvasRef, pose) { 
-  // ✅ Correct export name 
+  // Correct export name 
   if (!videoRef.current || !canvasRef.current || !pose) return; 
   if (videoRef.current.readyState < 2) { 
     await new Promise((r) => (videoRef.current.onloadedmetadata = r)); 
