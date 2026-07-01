@@ -1,45 +1,73 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
-from contextlib import asynccontextmanager
 
-from app.routes import pose, exercises, sessions
-from app.database.connection import init_db
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Lifespan events"""
-    # Startup
-    print("🚀 Starting Physiotherapy AI Backend...")
-    init_db()
-    yield
-    # Shutdown
-    print("👋 Shutting down...")
-
-app = FastAPI(
-    title="Physiotherapy AI Assistant",
-    description="Real-time exercise form analysis using AI",
-    version="1.0.0",
-    lifespan=lifespan
+from app.api.auth.routes import (
+    router as auth_router
 )
 
-# CORS middleware
+from app.api.users.routes import (
+    router as users_router
+)
+
+from app.api.patients.routes import (
+    router as patients_router
+)
+
+from app.api.exercises.routes import (
+    router as exercise_router
+)
+
+from app.api.sessions.routes import (
+    router as sessions_router
+)
+
+from app.api.progress.routes import (
+    router as progress_router
+)
+
+from app.api.session_reps.routes import (
+    router as session_rep_router
+)
+
+from app.api.therapist.routes import (
+    router as therapist_router
+)
+
+from app.api.admin.routes import (
+    router as admin_router
+)
+
+app = FastAPI(
+    title="Physiotherapy AI API",
+    version="1.0.0"
+)
+
+
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Your React app URL
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Include routers
-app.include_router(pose.router, prefix="/api/pose", tags=["pose"])
-app.include_router(exercises.router, prefix="/api/exercises", tags=["exercises"])
-app.include_router(sessions.router, prefix="/api/sessions", tags=["sessions"])
+app.include_router(auth_router)
+app.include_router(users_router)
+app.include_router(patients_router)
+app.include_router(exercise_router)
+app.include_router(sessions_router)
+app.include_router(progress_router)
+app.include_router(session_rep_router)
+app.include_router(therapist_router)
+app.include_router(admin_router)
 
 @app.get("/")
-async def root():
-    return {"message": "Physiotherapy AI API", "status": "running"}
-
-if __name__ == "__main__":
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+def root():
+    return {
+        "message": "Physiotherapy AI Backend Running"
+    }
