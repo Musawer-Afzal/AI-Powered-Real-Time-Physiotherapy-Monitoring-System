@@ -1,0 +1,120 @@
+.admin-dashboard{
+
+padding:40px;
+
+background:#f5f7fb;
+
+min-height:100vh;
+
+}
+
+.dashboard-grid{
+
+display:grid;
+
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+gap:25px;
+
+margin-top:30px;
+
+}
+
+.dashboard-card{
+
+background:white;
+
+padding:30px;
+
+border-radius:12px;
+
+box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+text-align:center;
+
+}
+
+.dashboard-card h2{
+
+font-size:42px;
+
+margin-bottom:10px;
+
+color:#2563eb;
+
+}
+
+.dashboard-card.pending h2{
+
+color:#dc2626;
+
+}
+
+.users-page{
+
+    padding:30px;
+}
+
+.users-table{
+
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 6px 18px rgba(0,0,0,.08);
+}
+
+.users-table th{
+
+    background:#1e3a8a;
+    color:white;
+    padding:15px;
+}
+
+.users-table td{
+
+    padding:14px;
+    border-bottom:1px solid #eee;
+}
+
+.users-table tr:hover{
+
+    background:#f7f9ff;
+}
+
+.users-table button{
+
+    margin-right:8px;
+    padding:8px 15px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.users-table button:first-child{
+
+    background:#10b981;
+    color:white;
+}
+
+.users-table button:last-child{
+
+    background:#ef4444;
+    color:white;
+}
+
+.dashboard-actions{
+
+    margin-top:25px;
+}
+
+.action-btn{
+
+    display:inline-block;
+    background:#2563eb;
+    color:white;
+    padding:12px 20px;
+    border-radius:10px;
+    text-decoration:none;
+}
