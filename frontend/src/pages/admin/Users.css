@@ -1,0 +1,76 @@
+.users-page{
+padding:40px;
+background:#f4f7fb;
+min-height:100vh;
+}
+
+.toolbar{
+display:flex;
+justify-content:space-between;
+margin:25px 0;
+gap:20px;
+}
+
+.toolbar input{
+flex:1;
+padding:12px;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:15px;
+}
+
+.toolbar select{
+padding:12px;
+border-radius:8px;
+}
+
+.users-table{
+width:100%;
+background:white;
+border-collapse:collapse;
+box-shadow:0 5px 15px rgba(0,0,0,.08);
+border-radius:12px;
+overflow:hidden;
+}
+
+.users-table th{
+background:#2563eb;
+color:white;
+padding:14px;
+}
+
+.users-table td{
+padding:14px;
+border-bottom:1px solid #eee;
+}
+
+.users-table tr:hover{
+background:#f8fbff;
+}
+
+.approve-btn{
+background:#16a34a;
+color:white;
+border:none;
+padding:8px 14px;
+border-radius:6px;
+cursor:pointer;
+margin-right:10px;
+}
+
+.delete-btn{
+background:#dc2626;
+color:white;
+border:none;
+padding:8px 14px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.approve-btn:hover{
+background:#15803d;
+}
+
+.delete-btn:hover{
+background:#b91c1c;
+}
