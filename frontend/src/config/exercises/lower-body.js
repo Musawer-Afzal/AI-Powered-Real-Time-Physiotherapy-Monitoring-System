@@ -56,21 +56,21 @@ export const LOWER_BODY_EXERCISES = {
     description: 'Lie on your side with legs straight and stacked. Lift your top leg upward while keeping it straight and body stable.',
     difficulty: 'beginner',
     bodyRegion: 'lower',
-    joint: 'hip',
+    joint: 'hipAbduction',
     movementType: 'abduction',
     injuryType: 'hip-pain',
     targetAngles: {
-      hip: {
-        min: 0,
-        max: 30,
-        optimal: [20, 30]
+      hipAbduction: {
+        min: 165,
+        max: 130,
+        optimal: [135, 150]
       }
     },
     repCounting: {
       type: 'angle-threshold',
-      joint: 'hip',
-      minAngle: 5,
-      maxAngle: 20,
+      joint: 'hipAbduction',
+      minAngle: 165,
+      maxAngle: 135,
       direction: 'up-down'
     }
   }
