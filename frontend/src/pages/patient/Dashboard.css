@@ -1,0 +1,47 @@
+.stats-grid {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 25px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.stats-grid .stat-card {
+    flex: 1 1 0%;
+    min-width: 0;
+}
+
+.patient-card,
+.sessions-card{
+
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    margin-top:20px;
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+}
+
+.patient-card p{
+    margin:10px 0;
+}
+
+.sessions-card table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+.sessions-card th {
+    background: #2563eb;
+    color: white;
+    padding: 12px;
+    text-align: center;
+}
+
+.sessions-card td{
+    padding:12px;
+    border-bottom:1px solid #ddd;
+    text-align:center;
+}
