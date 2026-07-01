@@ -1,10 +1,10 @@
 .camera-view {
   display: flex;
-  gap: 20px;
+  gap: 12px; /* Pulls video box closer to stats columns */
   height: 100%;
   width: 100%;
-  min-height: 500px;
-  max-height: 700px; /* Limit maximum height */
+  min-height: 400px; /* Reduced */
+  max-height: 600px; /* Lowered limit so it fits cleanly on screens */
   box-sizing: border-box;
 }
 
@@ -50,36 +50,34 @@
 /* Camera stats panel */
 .camera-stats {
   flex: 1.2;
-  min-width: 280px;
+  min-width: 250px;
   max-width: 250px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px; /* Pulls live feedback boxes together */
   box-sizing: border-box;
   overflow: visible;
-  max-height: 600px;
-  overflow-x: hidden;
 }
 
 /* Stats grid - ensure proper text wrapping */
 .stats-grid {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
 }
 
 .stat-item {
   background: #2c3e50;
   border-radius: 8px;
-  padding: 10px 8px;
+  padding: 6px 8px; /* Tighter internal padding */
   color: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   text-align: center;
   width: 100%;
   box-sizing: border-box;
   white-space: nowrap;
-  min-height: 60px;
+  min-height: 50px; /* Slightly shorter */
 }
 
 /* NEW: Performance stats section */
