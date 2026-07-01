@@ -1,0 +1,94 @@
+.patient-layout {
+    display: flex;
+    min-height: 100vh;
+    width: 100vw;
+    background: #edf3f8;
+}
+
+/* Base portal sidebar with transition settings */
+.portal-sidebar {
+    position: relative; /* Context for toggle button positioning */
+    width: 260px;
+    min-width: 260px;
+    background: #0F4C81;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 30px 20px;
+    box-sizing: border-box;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Collapsed state modifier overrides */
+.sidebar-collapsed .portal-sidebar {
+    width: 80px;
+    min-width: 80px;
+    padding: 30px 10px;
+    align-items: center;
+}
+
+/* Sidebar inner layout wrapper */
+.sidebar-content-wrapper {
+    width: 100%;
+}
+
+/* Toggle button styling */
+.sidebar-toggle-btn {
+    position: absolute;
+    right: -15px;
+    top: 35px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #3ea5ff;
+    color: white;
+    border: 2px solid #edf3f8;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: background 0.2s;
+}
+
+.sidebar-toggle-btn:hover {
+    background: #2f6ba5;
+}
+
+/* Navigation layout variations */
+nav {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+nav a {
+    text-decoration: none;
+    color: white;
+    padding: 14px;
+    border-radius: 10px;
+    transition: .25s;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    white-space: nowrap; /* Prevents text from breaking into lines during transition */
+}
+
+.sidebar-collapsed nav a {
+    justify-content: center;
+    padding: 14px 0;
+}
+
+/* Ensure the main container consumes everything left */
+.patient-page {
+    flex: 1;
+    padding: 20px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    transition: padding 0.3s ease;
+}
