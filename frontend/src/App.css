@@ -1,17 +1,18 @@
 #root {
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 20px;
   width: 100%;
   min-height: 100vh;
+  margin: 0;
+  padding: 0; /* Remove the outer padding so the blue sidebar touches the edge */
 }
 
+/* Clean up the inner app container since it lives inside the layout panel now */
 .app-container {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #2c3e50;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  width: 100%;
 }
 
 /* Header */
@@ -155,26 +156,26 @@
 /* Main Content Layout */
 .main-content {
   display: flex;
-  gap: 30px;
-  align-items: flex-start; /* Changed from default stretch */
+  gap: 15px; /* Bring panels closer together */
+  align-items: flex-start;
 }
 
-/* Sidebar - Make it scrollable independently */
+/* Locate .sidebar and reduce gap from 20px to 12px */
 .sidebar {
   flex: 0 0 320px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px; /* Pull blocks vertically together */
 }
 
-/* Make sidebar sections independent */
+/* Locate .sidebar-section and reduce padding from 20px to 12px */
 .sidebar-section {
   background: white;
   border-radius: 10px;
-  padding: 20px;
+  padding: 12px; /* Tighten up inner elements */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #e0e0e0;
-  flex-shrink: 0; /* Keep this */
+  flex-shrink: 0;
 }
 
 /* Exercise selector container sizing */
@@ -282,12 +283,12 @@
 .camera-section {
   background: white;
   border-radius: 10px;
-  padding: 20px;
+  padding: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #e0e0e0;
   display: flex;
   flex-direction: column;
-  min-height: 500px;
+  min-height: 450px;
   flex-grow: 1;
 }
 
