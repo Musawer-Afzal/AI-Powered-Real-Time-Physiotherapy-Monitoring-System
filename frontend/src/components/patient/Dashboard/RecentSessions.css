@@ -1,0 +1,25 @@
+.recent-sessions{
+    background:white;
+    padding:30px;
+    margin-top:30px;
+    border-radius:18px;
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+}
+
+.recent-sessions table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+.recent-sessions th{
+    text-align:left;
+    color:#666;
+    border-bottom:2px solid #eee;
+    padding-bottom:14px;
+}
+
+.recent-sessions td{
+    padding:16px 0;
+    border-bottom:1px solid #eee;
+}
