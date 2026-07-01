@@ -23,20 +23,11 @@ const initialState = {
 export function PoseProvider({ children }) {
   const [state, setState] = useState(initialState);
 
-  // PoseContext.jsx - Fix the updatePoseData function
-// PoseContext.jsx - Update the updatePoseData function
-// In the updatePoseData function, add better logging:
 const updatePoseData = useCallback((landmarks) => {
   if (!landmarks) return;
 
   setState(prev => {
     const angles = calculateAllAngles(landmarks);
-
-    console.log({
-      hasLandmarks: !!landmarks,
-      hasAnalyzer: !!prev.exerciseAnalyzer,
-      currentExercise: prev.currentExercise
-    });
 
     let analysis = null;
 
@@ -157,8 +148,6 @@ export function usePose() {
   return context;
 }
 
-// Enhanced angle calculation
-// Enhanced angle calculation for all exercises
 function calculateAllAngles(landmarks) {
   const angles = {};
   
@@ -186,16 +175,47 @@ function calculateAllAngles(landmarks) {
     angles.rightHip = calculateAngle(landmarks[12], landmarks[24], landmarks[26]);
   }
   
+  // Hip Abduction (side-lying leg raise)
+  if (landmarks[11] && landmarks[23] && landmarks[25]) {
+    angles.leftHipAbduction = calculateHipAbduction(
+        landmarks[11], // left shoulder
+        landmarks[23], // left hip
+        landmarks[25]  // left knee
+    );
+  }
+
+  if (landmarks[12] && landmarks[24] && landmarks[26]) {
+    angles.rightHipAbduction = calculateHipAbduction(
+        landmarks[12],
+        landmarks[24],
+        landmarks[26]
+    );
+  }
+  // if (angles.leftHipAbduction || angles.rightHipAbduction) {
+  //   console.log(
+  //     'Hip Abduction:',
+  //     angles.leftHipAbduction,
+  //     angles.rightHipAbduction
+  //   );
+  // }
+  // if (angles.leftHipAbduction || angles.rightHipAbduction) {
+  //   console.log(`
+  //     Hip Abduction:
+  //     ${angles.leftHipAbduction}, ${angles.rightHipAbduction},
+  //     ${Math.max(angles.leftHipAbduction, angles.rightHipAbduction)}`
+  //   );
+  // }
+
   // Hip abduction angle (vertical movement of leg when lying on side)
   // This calculates the angle of the leg relative to vertical
-  if (landmarks[23] && landmarks[25] && landmarks[27]) {
-    // Left hip abduction: angle between vertical and leg
-    angles.leftHipAbduction = calculateHipAbductionAngle(landmarks[23], landmarks[25]);
-  }
-  if (landmarks[24] && landmarks[26] && landmarks[28]) {
-    // Right hip abduction: angle between vertical and leg
-    angles.rightHipAbduction = calculateHipAbductionAngle(landmarks[24], landmarks[26]);
-  }
+  // if (landmarks[23] && landmarks[25] && landmarks[27]) {
+  //   // Left hip abduction: angle between vertical and leg
+  //   angles.leftHip = calculateHipAbductionAngle(landmarks[23], landmarks[25]);
+  // }
+  // if (landmarks[24] && landmarks[26] && landmarks[28]) {
+  //   // Right hip abduction: angle between vertical and leg
+  //   angles.rightHip = calculateHipAbductionAngle(landmarks[24], landmarks[26]);
+  // }
   
   // Knee angles
   if (landmarks[23] && landmarks[25] && landmarks[27]) {
@@ -205,7 +225,6 @@ function calculateAllAngles(landmarks) {
     angles.rightKnee = calculateAngle(landmarks[24], landmarks[26], landmarks[28]);
   }
   
-  // Also calculate average for convenience
   angles.shoulder = (angles.leftShoulder + angles.rightShoulder) / 2;
   angles.hip = (angles.leftHip + angles.rightHip) / 2;
   angles.knee = (angles.leftKnee + angles.rightKnee) / 2;
@@ -214,19 +233,49 @@ function calculateAllAngles(landmarks) {
   return angles;
 }
 
-function calculateHipAbductionAngle(hip, knee) {
-  // Calculate the angle of the leg relative to vertical (straight down)
-  // This gives us the abduction angle when lying on side
-  const dx = knee.x - hip.x;
-  const dy = knee.y - hip.y;
-  
-  // Angle relative to vertical (y-axis)
-  // When leg is straight down, angle is 0
-  // When leg is lifted sideways, angle increases
-  const angleRad = Math.atan2(Math.abs(dx), Math.abs(dy));
-  const angleDeg = angleRad * 180 / Math.PI;
-  
-  return Math.round(angleDeg);
+function calculateHipAbduction(shoulder, hip, knee) {
+
+  const torsoVector = {
+    x: shoulder.x - hip.x,
+    y: shoulder.y - hip.y
+  };
+
+  const legVector = {
+    x: knee.x - hip.x,
+    y: knee.y - hip.y
+  };
+
+
+  const dot =
+    torsoVector.x * legVector.x +
+    torsoVector.y * legVector.y;
+
+
+  const torsoLength =
+    Math.sqrt(
+      torsoVector.x ** 2 +
+      torsoVector.y ** 2
+    );
+
+
+  const legLength =
+    Math.sqrt(
+      legVector.x ** 2 +
+      legVector.y ** 2
+    );
+
+
+  const cosAngle =
+    dot / (torsoLength * legLength);
+
+
+  const angle =
+    Math.acos(
+      Math.max(-1, Math.min(1, cosAngle))
+    ) * 180 / Math.PI;
+
+
+  return Math.round(angle);
 }
 
 function calculateAngle(a, b, c) {
