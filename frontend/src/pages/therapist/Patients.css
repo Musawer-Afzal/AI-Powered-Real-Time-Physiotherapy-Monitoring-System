@@ -1,0 +1,59 @@
+.patients-page{
+padding:40px;
+background:#f4f7fb;
+min-height:100vh;
+}
+
+.patients-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:30px;
+}
+
+.top-controls{
+display:flex;
+gap:12px;
+}
+
+.top-controls input{
+padding:10px 14px;
+border:1px solid #d5d9e2;
+border-radius:8px;
+min-width:220px;
+}
+
+.top-controls button{
+padding:10px 18px;
+border:none;
+background:#2563eb;
+color:white;
+border-radius:8px;
+cursor:pointer;
+font-weight:600;
+}
+
+.patient-card{
+background:white;
+padding:20px;
+margin-bottom:20px;
+border-radius:12px;
+box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.patient-card h3{
+margin-bottom:8px;
+}
+
+.patient-card p{
+margin:5px 0;
+color:#555;
+}
+
+.patient-card a{
+display:inline-block;
+margin-top:12px;
+color:#2563eb;
+font-weight:bold;
+text-decoration:none;
+}
