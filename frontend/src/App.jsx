@@ -7,6 +7,7 @@ import {
 
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import TherapistRegister from "./pages/auth/TherapistRegister";
 
 import PatientDashboard from "./pages/patient/Dashboard";
 import Exercise from "./pages/patient/Exercise";
@@ -39,7 +40,10 @@ export default function App() {
                     path="/register"
                     element={<Register />}
                 />
-
+                <Route
+                    path="/therapist-register"
+                    element={<TherapistRegister />}
+                />
                 {/* PATIENT */}
                 <Route
                     path="/patient"
