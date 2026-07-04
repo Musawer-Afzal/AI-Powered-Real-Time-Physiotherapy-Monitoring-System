@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-
+from datetime import date
 from app.models.user import User
 from app.models.patient import Patient
 
@@ -13,7 +13,9 @@ def create_user(
     db: Session,
     name: str,
     email: str,
-    password: str
+    password: str,
+    date_of_birth: date | None = None,
+    gender: str | None = None
 ):
     existing_user = (db.query(User).filter(User.email == email).first())
 
@@ -31,10 +33,12 @@ def create_user(
     db.add(user)
     db.flush()
     patient = Patient(
-        user_id = user.id,
-        gender = None,
-        diagnosis = "",
-        therapist_notes = "")
+        user_id=user.id,
+        date_of_birth=date_of_birth,
+        gender=gender,
+        diagnosis="",
+        therapist_notes=""
+    )
     db.add(patient)
     db.commit()
     db.refresh(user)

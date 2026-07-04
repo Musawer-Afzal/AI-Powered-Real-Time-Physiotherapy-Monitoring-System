@@ -34,10 +34,12 @@ def register(
     db: Session = Depends(get_db)
 ):
     created_user = create_user(
-        db,
-        user.name,
-        user.email,
-        user.password
+        db=db,
+        name=user.name,
+        email=user.email,
+        password=user.password,
+        date_of_birth=user.date_of_birth,
+        gender=user.gender
     )
 
     if not created_user:
