@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from uuid import UUID
 
 
@@ -21,7 +21,10 @@ class SessionResponse(BaseModel):
 
 
 class SessionFinish(BaseModel):
-    total_reps: int
-    good_reps: int
-    average_form_score: float
-    duration_seconds: int
+    total_reps: int = Field(ge=0)
+    good_reps: int = Field(ge=0)
+    average_form_score: float = Field(
+        ge=0,
+        le=100
+    )
+    duration_seconds: int = Field(ge=0)
