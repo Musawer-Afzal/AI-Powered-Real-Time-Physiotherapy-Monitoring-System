@@ -16,7 +16,7 @@ export function setupPose(onResults) {
   });
 
   pose.setOptions({
-    modelComplexity: 1,
+    modelComplexity: 0,
     smoothLandmarks: true,
     minDetectionConfidence: 0.5,
     minTrackingConfidence: 0.5

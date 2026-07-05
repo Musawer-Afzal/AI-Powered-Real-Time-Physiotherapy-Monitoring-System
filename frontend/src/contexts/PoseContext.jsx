@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
 import { createExerciseAnalyzer } from '../services/analysis/ExerciseAnalyzer';
 import { getExercise } from '../config/exercises/index';
 
@@ -23,47 +23,55 @@ const initialState = {
 export function PoseProvider({ children }) {
   const [state, setState] = useState(initialState);
 
+  const lastAnalysisTime = useRef(0);
+
+  const ANALYSIS_INTERVAL = 100; // milliseconds
+
 const updatePoseData = useCallback((landmarks) => {
-  if (!landmarks) return;
+    if (!landmarks) return;
+    const now = performance.now();
+    if (now - lastAnalysisTime.current < ANALYSIS_INTERVAL) {
+        return;
+    }
+    lastAnalysisTime.current = now;
+    setState(prev => {
 
-  setState(prev => {
-    const angles = calculateAllAngles(landmarks);
-
-    let analysis = null;
+    let angles = prev.angles;
+    let analysis = prev.analysis;
 
     if (prev.exerciseAnalyzer && prev.currentExercise) {
-      try {
+
+        angles = calculateAllAngles(landmarks);
+
         analysis = prev.exerciseAnalyzer.analyzeFrame(
-          angles,
-          Date.now()
+            angles,
+            Date.now()
         );
+    }
 
-        if (
-          analysis &&
-          analysis.totalReps !== prev.analysis?.totalReps
-        ) {
-          console.log(
-            `🎯 NEW REP COUNTED! Total: ${analysis.totalReps}`
-          );
-        }
+    const analysisChanged =
+      JSON.stringify(analysis) !==
+      JSON.stringify(prev.analysis);
 
-      } catch (error) {
-        console.error('❌ Error in analysis:', error);
-      }
+    if (!analysisChanged) {
+        return {
+            ...prev,
+            landmarks
+        };
     }
 
     return {
-      ...prev,
-      landmarks,
-      angles,
-      isDetecting: true,
-      analysis: analysis || prev.analysis
+        ...prev,
+        landmarks,
+        angles,
+        isDetecting: true,
+        analysis
     };
   });
 }, []);
 
   const setCurrentExercise = useCallback((exerciseId) => {
-    console.log('SET CURRENT EXERCISE CALLED:', exerciseId);
+    // console.log('SET CURRENT EXERCISE CALLED:', exerciseId);
 
     if (!exerciseId) {
       setState(prev => ({
@@ -78,7 +86,7 @@ const updatePoseData = useCallback((landmarks) => {
     const exerciseConfig = getExercise(exerciseId);
 
     if (!exerciseConfig) {
-      console.error(`Exercise not found: ${exerciseId}`);
+      // console.error(`Exercise not found: ${exerciseId}`);
       return;
     }
 
@@ -100,8 +108,8 @@ const updatePoseData = useCallback((landmarks) => {
       }
     }));
 
-    console.log(`✅ Exercise analyzer created for: ${exerciseConfig.name}`);
-    console.log('🎯 Target angles:', exerciseConfig.targetAngles);
+    // console.log(`✅ Exercise analyzer created for: ${exerciseConfig.name}`);
+    // console.log('🎯 Target angles:', exerciseConfig.targetAngles);
   }, []);
 
   const resetExercise = useCallback(() => {
