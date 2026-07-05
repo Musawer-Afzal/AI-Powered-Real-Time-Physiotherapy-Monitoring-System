@@ -4,16 +4,18 @@
 
 .control-buttons {
   display: flex;
-  gap: 15px;
+  flex-wrap: wrap; /* Allows buttons to stack nicely if the space gets too cramped */
+  gap: 10px;       /* Reduced gap slightly to save horizontal room */
   justify-content: center;
   margin-bottom: 15px;
+  width: 100%;     /* Ensure it fills the parent container */
 }
 
 .control-btn {
-  padding: 12px 24px;
+  padding: 12px 16px; /* Reduced horizontal padding */
   border: none;
   border-radius: 8px;
-  font-size: 1em;
+  font-size: 0.95em;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -21,7 +23,10 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-width: 150px;
+  
+  /* Flexbox settings to let them resize smoothly */
+  flex: 1 1 calc(50% - 10px); 
+  min-width: 120px;            /* Low minimum baseline so they stay constrained */
 }
 
 .start-btn {

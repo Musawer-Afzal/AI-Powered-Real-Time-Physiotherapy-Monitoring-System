@@ -11,6 +11,7 @@
 .stats-grid .stat-card {
     flex: 1 1 0%;
     min-width: 0;
+    background-color: #fefdfd;
 }
 
 .patient-card,
