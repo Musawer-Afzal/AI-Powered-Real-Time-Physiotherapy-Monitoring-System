@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 
 from app.models.user import User
 from app.models.patient import Patient
@@ -33,31 +34,41 @@ def get_dashboard_stats(db: Session):
 
     }
 
-def get_all_users(db: Session):
+def get_all_users(
+    db: Session,
+    role=None,
+    approved=None,
+    search=None
+):
 
-    users = db.query(User).all()
+    query = db.query(User)
 
-    return [
+    if role:
+        query = query.filter(
+            User.role == role
+        )
 
-        {
+    if approved is not None:
+        query = query.filter(
+            User.is_approved == approved
+        )
 
-            "id": str(user.id),
+    if search:
 
-            "name": user.name,
+        query = query.filter(
 
-            "email": user.email,
+            or_(
+                User.name.ilike(f"%{search}%"),
+                User.email.ilike(f"%{search}%")
+            )
 
-            "role": user.role,
+        )
 
-            "approved": user.is_approved,
+    users = query.order_by(
+        User.created_at.desc()
+    ).all()
 
-            "created_at": user.created_at
-
-        }
-
-        for user in users
-
-    ]
+    return users
 
 def approve_therapist(db: Session, user_id):
 
@@ -83,11 +94,27 @@ def approve_therapist(db: Session, user_id):
 
     return therapist
 
-from app.models.user import User
-from app.models.patient import Patient
-from app.models.session import Session
-from app.models.therapist_profile import TherapistProfile
-from app.models.therapist_patient import TherapistPatient
+
+def update_user_status(
+    db: Session,
+    user_id,
+    approved
+):
+
+    user = (
+        db.query(User)
+        .filter(User.id == user_id)
+        .first()
+    )
+
+    if not user:
+        return False
+
+    user.is_approved = approved
+
+    db.commit()
+
+    return True
 
 
 def delete_user(db, user_id):

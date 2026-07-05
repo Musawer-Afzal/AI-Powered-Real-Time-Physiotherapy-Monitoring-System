@@ -7,10 +7,29 @@ export async function getDashboard() {
     return response.data;
 }
 
-export async function getUsers() {
+export async function getUsers(filters = {}) {
+
+    const params = new URLSearchParams();
+
+    if (filters.role)
+        params.append("role", filters.role);
+
+    if (filters.approved !== undefined)
+        params.append(
+            "approved",
+            filters.approved
+        );
+
+    if (filters.search)
+        params.append(
+            "search",
+            filters.search
+        );
+
     const response = await api.get(
-        "/api/admin/users"
+        `/api/admin/users?${params.toString()}`
     );
+
     return response.data;
 }
 
@@ -28,9 +47,29 @@ export async function deleteUser(id) {
     return response.data;
 }
 
+async function updateUserStatus(
+    id,
+    approved
+) {
+
+    const response = await api.put(
+        `/api/admin/users/${id}/status`,
+        null,
+        {
+            params:{
+                is_approved:approved
+            }
+        }
+    );
+
+    return response.data;
+
+}
+
 export default {
     getDashboard,
     getUsers,
     approveTherapist,
-    deleteUser
+    deleteUser,
+    updateUserStatus
 };
