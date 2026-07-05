@@ -45,6 +45,43 @@ export default function Register(){
             setError("Please fill in all fields.");
             return;
         }
+
+        if (form.name.trim().length < 3) {
+            setError("Name must be at least 3 characters long.");
+            return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(form.email)) {
+            setError("Please enter a valid email address.");
+            return;
+        }
+
+        if (form.password.length < 8) {
+            setError("Password must be at least 8 characters long.");
+            return;
+        }
+
+        if (!/[A-Z]/.test(form.password)) {
+            setError("Password must contain at least one uppercase letter.");
+            return;
+        }
+
+        if (!/[a-z]/.test(form.password)) {
+            setError("Password must contain at least one lowercase letter.");
+            return;
+        }
+
+        if (!/[0-9]/.test(form.password)) {
+            setError("Password must contain at least one number.");
+            return;
+        }
+
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(form.password)) {
+            setError("Password must contain at least one special character.");
+            return;
+        }
         try {
             // Create User
             await authService.register({
@@ -73,11 +110,18 @@ export default function Register(){
             }, 1000);
         }
 
-        catch(err){
-            setError(
-                err.response?.data?.detail ??
-                "Registration failed."
-            );
+        catch (err) {
+            const detail = err.response?.data?.detail;
+
+            if (Array.isArray(detail)) {
+                setError(detail[0].msg);
+            }
+            else if (typeof detail === "string") {
+                setError(detail);
+            }
+            else {
+                setError("Registration failed.");
+            }
         }
     }
 
