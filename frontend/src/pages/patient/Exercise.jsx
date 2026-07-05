@@ -195,54 +195,63 @@ function MainApp() {
           alert("Please select an exercise");
           return;
       }
+
       try {
+          // Resume existing session
+          if (backendSession) {
+              setSessionActive(true);
+              return;
+          }
+
+          // Create new session
           const session = await startSession({
               exercise_code: localExercise
           });
+
           setBackendSession(session);
           setSessionStartTime(Date.now());
           setSessionActive(true);
-      }
-      catch (err) {
+
+      } catch (err) {
           console.error(err);
           alert("Could not start session");
       }
   };
 
-  const handleSessionStop = async () => {
-    try {
-      if (!backendSession) {
-        setSessionActive(false);
-        return;
-      }
-
-      const duration = sessionStartTime? Math.floor((Date.now() - sessionStartTime) / 1000): 0;
-      await finishSession(
-        backendSession.id,
-        {
-          total_reps: analysis?.totalReps ?? 0,
-          good_reps: analysis?.goodReps ?? 0,
-          average_form_score: Number(analysis?.formScore ?? 0),
-          duration_seconds: duration
-        }
-      );
-      
-      setBackendSession(null);
+  const handleSessionStop = () => {
       setSessionActive(false);
-      setSessionStartTime(null);
-      alert("Session Saved");
-    }
-    catch (err) {
-      console.error(err);
-      alert("Could not save session");
-    }
   };
 
-  const handleSessionReset = () => {
-    console.log('🔄 Resetting session');
-    setSessionActive(false);
-    setLocalExercise(null);
-    resetExercise();
+  const handleSessionReset = async () => {
+      try {
+          // If a backend session exists, save it first
+          if (backendSession) {
+              const duration = sessionStartTime
+                  ? Math.floor((Date.now() - sessionStartTime) / 1000)
+                  : 0;
+
+              await finishSession(
+                  backendSession.id,
+                  {
+                      total_reps: analysis?.totalReps ?? 0,
+                      good_reps: analysis?.goodReps ?? 0,
+                      average_form_score: Number(
+                          analysis?.formScore ?? 0
+                      ),
+                      duration_seconds: duration
+                  }
+              );
+          }
+      } catch (err) {
+          console.error("Failed to finish session:", err);
+      }
+
+      // Always clear frontend state
+      setBackendSession(null);
+      setSessionStartTime(null);
+      setSessionActive(false);
+      setLocalExercise(null);
+      resetExercise();
   };
 
   const getSessionStatus = () => {
