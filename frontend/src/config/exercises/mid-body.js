@@ -36,8 +36,8 @@ export const MID_BODY_EXERCISES = {
     injuryType: 'lower-back-pain',
     targetAngles: {
       hip: {
-        min: 170,
-        max: 130,
+        min: 130,
+        max: 170,
         optimal: [130, 150]
       }
     },
