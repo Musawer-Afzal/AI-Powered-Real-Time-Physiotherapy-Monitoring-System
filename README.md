@@ -402,8 +402,8 @@ backend/
 ## Clone Repository
 
 ```bash
-git clone https://github.com/yourusername/ai-physiotherapy-assistant.git
-cd ai-physiotherapy-assistant
+git clone https://github.com/Musawer-Afzal/AI-Powered-Real-Time-Physiotherapy-Monitoring-System.git
+cd AI-Powered-Real-Time-Physiotherapy-Monitoring-System
 ```
 
 ---
@@ -537,9 +537,9 @@ Final Year Project
 
 AI-Powered Physiotherapy Rehabilitation System
 
-GitHub: https://github.com/yourusername
+GitHub: https://github.com/Musawer-Afzal
 
-LinkedIn: https://linkedin.com/in/yourprofile
+LinkedIn: https://www.linkedin.com/in/musawer-afzal-556469265
 
 ---
 
