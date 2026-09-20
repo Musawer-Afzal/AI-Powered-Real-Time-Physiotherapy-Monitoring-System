@@ -1,4 +1,3 @@
-// Mid body (core & spine) exercises configuration
 export const MID_BODY_EXERCISES = {
   'pelvic-tilt': {
     id: 'pelvic-tilt',

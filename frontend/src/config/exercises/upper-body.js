@@ -1,4 +1,3 @@
-// Upper body exercises configuration
 export const UPPER_BODY_EXERCISES = {
   'shoulder-pendulum': {
     id: 'shoulder-pendulum',
@@ -101,7 +100,6 @@ export const UPPER_BODY_EXERCISES = {
   }
 };
 
-// Get exercises by category (for backward compatibility)
 export const getUpperBodyExercisesByCategory = () => {
   return {
     'Shoulder Exercises': {

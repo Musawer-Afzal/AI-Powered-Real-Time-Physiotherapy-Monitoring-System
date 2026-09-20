@@ -1,4 +1,3 @@
-// Lower body exercises configuration
 export const LOWER_BODY_EXERCISES = {
   'straight-leg-raise': {
     id: 'straight-leg-raise',
