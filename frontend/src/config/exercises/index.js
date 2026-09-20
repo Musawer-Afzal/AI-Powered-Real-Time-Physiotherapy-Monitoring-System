@@ -1,4 +1,3 @@
-// Import all exercises first
 import {
   UPPER_BODY_EXERCISES,
   getUpperBodyExercise,
@@ -18,7 +17,6 @@ import {
 } from './lower-body';
 
 
-// Export everything
 export {
   UPPER_BODY_EXERCISES,
   getUpperBodyExercise,
@@ -34,34 +32,33 @@ export {
 };
 
 
-// Combined getter
 export const getExercise = (id) => {
 
-  console.log("🔎 Searching exercise in index:", id);
+  console.log("Searching exercise in index:", id);
 
 
   const upper = getUpperBodyExercise(id);
   if (upper) {
-    console.log("✅ Found in upper body");
+    console.log("Found in upper body");
     return upper;
   }
 
 
   const mid = getMidBodyExercise(id);
   if (mid) {
-    console.log("✅ Found in mid body");
+    console.log("Found in mid body");
     return mid;
   }
 
 
   const lower = getLowerBodyExercise(id);
   if (lower) {
-    console.log("✅ Found in lower body");
+    console.log("Found in lower body");
     return lower;
   }
 
 
-  console.error("❌ Exercise not found:", id);
+  console.error("Exercise not found:", id);
 
   console.log(
     "Available mid exercises:",
