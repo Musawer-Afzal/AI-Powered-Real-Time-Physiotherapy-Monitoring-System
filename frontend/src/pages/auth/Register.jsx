@@ -4,7 +4,6 @@ import { Eye, EyeOff } from "lucide-react";
 import {Link,useNavigate} from "react-router-dom";
 
 import authService from "../../connect_services/authService";
-import patientService from "../../connect_services/patientService";
 
 import "../../styles/auth.css";
 
@@ -30,10 +29,12 @@ export default function Register(){
 
         setSuccess("");
         setError("");
+
         if (form.password !== form.confirmPassword) {
             setError("Passwords do not match.");
             return;
         }
+
         if (
             !form.name ||
             !form.email ||
@@ -46,81 +47,41 @@ export default function Register(){
             return;
         }
 
-        if (form.name.trim().length < 3) {
-            setError("Name must be at least 3 characters long.");
-            return;
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (!emailRegex.test(form.email)) {
-            setError("Please enter a valid email address.");
-            return;
-        }
-
         if (form.password.length < 8) {
             setError("Password must be at least 8 characters long.");
             return;
         }
 
-        if (!/[A-Z]/.test(form.password)) {
-            setError("Password must contain at least one uppercase letter.");
-            return;
-        }
-
-        if (!/[a-z]/.test(form.password)) {
-            setError("Password must contain at least one lowercase letter.");
-            return;
-        }
-
-        if (!/[0-9]/.test(form.password)) {
-            setError("Password must contain at least one number.");
-            return;
-        }
-
-        if (!/[!@#$%^&*(),.?":{}|<>]/.test(form.password)) {
-            setError("Password must contain at least one special character.");
-            return;
-        }
         try {
-            // Create User
             await authService.register({
                 name: form.name,
                 email: form.email,
-                password: form.password
-            });
-
-            // Login immediately to obtain JWT
-            await authService.login(
-                form.email,
-                form.password
-            );
-
-            // Create Patient Profile
-            await patientService.createPatientProfile({
+                password: form.password,
                 date_of_birth: form.date_of_birth,
-                gender: form.gender,
-                diagnosis: "",
-                therapist_notes: ""
+                gender: form.gender
             });
-            authService.logout();
+
             setSuccess("Account created successfully.");
+
             setTimeout(() => {
                 navigate("/login");
             }, 1000);
-        }
 
-        catch (err) {
+        } catch (err) {
+            console.error("Registration error:", err);
+
             const detail = err.response?.data?.detail;
 
             if (Array.isArray(detail)) {
-                setError(detail[0].msg);
-            }
-            else if (typeof detail === "string") {
-                setError(detail);
-            }
-            else {
-                setError("Registration failed.");
+                setError(
+                    detail
+                        .map(error => error.msg)
+                        .join(", ")
+                );
+            } else {
+                setError(
+                    detail || "Registration failed."
+                );
             }
         }
     }
