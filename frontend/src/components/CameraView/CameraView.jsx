@@ -17,7 +17,6 @@ export default function CameraView({ isActive, showLandmarks, showAngles, curren
     return getUpperBodyExercise(id) || getMidBodyExercise(id) || getLowerBodyExercise(id);
   };
   
-  // Add debugging for currentExercise
   useEffect(() => {
     console.log('📹 CameraView - Exercise changed:', currentExercise);
     if (currentExercise) {
@@ -33,7 +32,6 @@ export default function CameraView({ isActive, showLandmarks, showAngles, curren
   const lastFpsTimeRef = useRef(Date.now());
   const isInitializedRef = useRef(false);
 
-  // FPS counter
   useEffect(() => {
     const interval = setInterval(() => {
       const now = Date.now();
@@ -98,7 +96,6 @@ export default function CameraView({ isActive, showLandmarks, showAngles, curren
             console.log('Camera ready:', 
               videoRef.current.videoWidth, 'x', videoRef.current.videoHeight);
             
-            // Set canvas dimensions once
             if (containerRef.current && canvasRef.current) {
               const container = containerRef.current;
               canvasRef.current.width = container.clientWidth;
@@ -134,7 +131,6 @@ export default function CameraView({ isActive, showLandmarks, showAngles, curren
       poseRef.current = null;
     }
     
-    // Initialize pose
     poseRef.current = initializePoseDetection(
       videoRef,
       canvasRef,
@@ -145,7 +141,6 @@ export default function CameraView({ isActive, showLandmarks, showAngles, curren
           const count = results.poseLandmarks.length;
           setLandmarksCount(count);
           
-          // Calculate confidence
           const visibleLandmarks = results.poseLandmarks.filter(l => l.visibility > 0.5);
           const confidenceLevel = visibleLandmarks.length / count;
           
@@ -173,13 +168,11 @@ export default function CameraView({ isActive, showLandmarks, showAngles, curren
   const stopCamera = () => {
     console.log('Stopping camera...');
     
-    // 1. Stop pose detection first
     if (poseRef.current) {
       stopDetection(poseRef.current);
       poseRef.current = null;
     }
     
-    // 2. Stop all video tracks
     if (videoRef.current && videoRef.current.srcObject) {
       const stream = videoRef.current.srcObject;
       const tracks = stream.getTracks();
@@ -192,13 +185,11 @@ export default function CameraView({ isActive, showLandmarks, showAngles, curren
       videoRef.current.srcObject = null;
     }
     
-    // 3. Clear canvas
     if (canvasRef.current) {
       const ctx = canvasRef.current.getContext('2d');
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     }
     
-    // 4. Reset states
     setLandmarksCount(0);
     setConfidence('Low');
     setIsDetecting(false);
@@ -207,7 +198,6 @@ export default function CameraView({ isActive, showLandmarks, showAngles, curren
     console.log('Camera fully stopped');
   };
 
-  // Helper function to get form score text and color
   const getFormScoreInfo = (score) => {
     const formScore = score || 50;
     let text = 'Needs Work';
@@ -227,8 +217,7 @@ export default function CameraView({ isActive, showLandmarks, showAngles, curren
     return { text, colorClass, value: formScore };
   };
 
-  // Get exercise-specific angles based on the joint
-  // Get exercise-specific angles based on the joint
+
   const getRelevantAngles = () => {
     if (!angles || !currentExercise) return {};
     
