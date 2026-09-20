@@ -257,7 +257,7 @@ export class ExerciseAnalyzer {
         this.state.totalReps++;
         this.state.currentRep++;
         
-        console.log(`✅ Rep ${this.state.totalReps} complete! Peak: ${Math.round(this.state.peakAngle)}°, Quality: ${Math.round(quality * 100)}%`);
+        console.log(`Rep ${this.state.totalReps} complete! Peak: ${Math.round(this.state.peakAngle)}°, Quality: ${Math.round(quality * 100)}%`);
         
         // Reset
         this.state.repPhase = 'resting';
@@ -294,7 +294,6 @@ export class ExerciseAnalyzer {
   }
 
   calculateFormScore(primaryAngle, allAngles) {
-    // Simple form score based on maintaining good form
     this.state.formScore = Math.max(50, Math.min(100, this.state.formScore + (Math.random() - 0.5) * 2));
   }
 
