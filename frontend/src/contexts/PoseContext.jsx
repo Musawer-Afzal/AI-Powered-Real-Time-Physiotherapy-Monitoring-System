@@ -25,7 +25,7 @@ export function PoseProvider({ children }) {
 
   const lastAnalysisTime = useRef(0);
 
-  const ANALYSIS_INTERVAL = 100; // milliseconds
+  const ANALYSIS_INTERVAL = 100;
 
 const updatePoseData = useCallback((landmarks) => {
     if (!landmarks) return;
@@ -40,24 +40,14 @@ const updatePoseData = useCallback((landmarks) => {
     let analysis = prev.analysis;
 
     if (prev.exerciseAnalyzer && prev.currentExercise) {
-
         angles = calculateAllAngles(landmarks);
-
-        analysis = prev.exerciseAnalyzer.analyzeFrame(
-            angles,
-            Date.now()
-        );
+        analysis = prev.exerciseAnalyzer.analyzeFrame(angles, Date.now());
     }
 
-    const analysisChanged =
-      JSON.stringify(analysis) !==
-      JSON.stringify(prev.analysis);
+    const analysisChanged = JSON.stringify(analysis) !== JSON.stringify(prev.analysis);
 
     if (!analysisChanged) {
-        return {
-            ...prev,
-            landmarks
-        };
+        return {...prev, landmarks};
     }
 
     return {
@@ -71,7 +61,6 @@ const updatePoseData = useCallback((landmarks) => {
 }, []);
 
   const setCurrentExercise = useCallback((exerciseId) => {
-    // console.log('SET CURRENT EXERCISE CALLED:', exerciseId);
 
     if (!exerciseId) {
       setState(prev => ({
@@ -86,12 +75,10 @@ const updatePoseData = useCallback((landmarks) => {
     const exerciseConfig = getExercise(exerciseId);
 
     if (!exerciseConfig) {
-      // console.error(`Exercise not found: ${exerciseId}`);
       return;
     }
 
     const analyzer = createExerciseAnalyzer(exerciseConfig);
-
     analyzer.reset();
 
     setState(prev => ({
@@ -107,9 +94,6 @@ const updatePoseData = useCallback((landmarks) => {
         formScoreHistory: []
       }
     }));
-
-    // console.log(`✅ Exercise analyzer created for: ${exerciseConfig.name}`);
-    // console.log('🎯 Target angles:', exerciseConfig.targetAngles);
   }, []);
 
   const resetExercise = useCallback(() => {
@@ -186,9 +170,9 @@ function calculateAllAngles(landmarks) {
   // Hip Abduction (side-lying leg raise)
   if (landmarks[11] && landmarks[23] && landmarks[25]) {
     angles.leftHipAbduction = calculateHipAbduction(
-        landmarks[11], // left shoulder
-        landmarks[23], // left hip
-        landmarks[25]  // left knee
+        landmarks[11],
+        landmarks[23],
+        landmarks[25]
     );
   }
 
@@ -199,32 +183,6 @@ function calculateAllAngles(landmarks) {
         landmarks[26]
     );
   }
-  // if (angles.leftHipAbduction || angles.rightHipAbduction) {
-  //   console.log(
-  //     'Hip Abduction:',
-  //     angles.leftHipAbduction,
-  //     angles.rightHipAbduction
-  //   );
-  // }
-  // if (angles.leftHipAbduction || angles.rightHipAbduction) {
-  //   console.log(`
-  //     Hip Abduction:
-  //     ${angles.leftHipAbduction}, ${angles.rightHipAbduction},
-  //     ${Math.max(angles.leftHipAbduction, angles.rightHipAbduction)}`
-  //   );
-  // }
-
-  // Hip abduction angle (vertical movement of leg when lying on side)
-  // This calculates the angle of the leg relative to vertical
-  // if (landmarks[23] && landmarks[25] && landmarks[27]) {
-  //   // Left hip abduction: angle between vertical and leg
-  //   angles.leftHip = calculateHipAbductionAngle(landmarks[23], landmarks[25]);
-  // }
-  // if (landmarks[24] && landmarks[26] && landmarks[28]) {
-  //   // Right hip abduction: angle between vertical and leg
-  //   angles.rightHip = calculateHipAbductionAngle(landmarks[24], landmarks[26]);
-  // }
-  
   // Knee angles
   if (landmarks[23] && landmarks[25] && landmarks[27]) {
     angles.leftKnee = calculateAngle(landmarks[23], landmarks[25], landmarks[27]);
@@ -242,46 +200,13 @@ function calculateAllAngles(landmarks) {
 }
 
 function calculateHipAbduction(shoulder, hip, knee) {
-
-  const torsoVector = {
-    x: shoulder.x - hip.x,
-    y: shoulder.y - hip.y
-  };
-
-  const legVector = {
-    x: knee.x - hip.x,
-    y: knee.y - hip.y
-  };
-
-
-  const dot =
-    torsoVector.x * legVector.x +
-    torsoVector.y * legVector.y;
-
-
-  const torsoLength =
-    Math.sqrt(
-      torsoVector.x ** 2 +
-      torsoVector.y ** 2
-    );
-
-
-  const legLength =
-    Math.sqrt(
-      legVector.x ** 2 +
-      legVector.y ** 2
-    );
-
-
-  const cosAngle =
-    dot / (torsoLength * legLength);
-
-
-  const angle =
-    Math.acos(
-      Math.max(-1, Math.min(1, cosAngle))
-    ) * 180 / Math.PI;
-
+  const torsoVector = {x: shoulder.x - hip.x,y: shoulder.y - hip.y};
+  const legVector = {x: knee.x - hip.x, y: knee.y - hip.y};
+  const dot = torsoVector.x * legVector.x + torsoVector.y * legVector.y;
+  const torsoLength = Math.sqrt(torsoVector.x ** 2 + torsoVector.y ** 2);
+  const legLength = Math.sqrt(legVector.x ** 2 + legVector.y ** 2);
+  const cosAngle =dot / (torsoLength * legLength);
+  const angle = Math.acos(Math.max(-1, Math.min(1, cosAngle))) * 180 / Math.PI;
 
   return Math.round(angle);
 }
