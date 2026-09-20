@@ -65,7 +65,7 @@ export default function Register(){
 
             setTimeout(() => {
                 navigate("/login");
-            }, 1000);
+            }, 2000);
 
         } catch (err) {
             console.error("Registration error:", err);
