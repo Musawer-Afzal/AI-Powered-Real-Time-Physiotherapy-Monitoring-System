@@ -2,10 +2,9 @@
   width: 100%;
   min-height: 100vh;
   margin: 0;
-  padding: 0; /* Remove the outer padding so the blue sidebar touches the edge */
+  padding: 0;
 }
 
-/* Clean up the inner app container since it lives inside the layout panel now */
 .app-container {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #2c3e50;
@@ -15,7 +14,6 @@
   width: 100%;
 }
 
-/* Header */
 .app-header {
   display: flex;
   justify-content: space-between;
@@ -153,32 +151,28 @@
   color: #721c24;
 }
 
-/* Main Content Layout */
 .main-content {
   display: flex;
-  gap: 15px; /* Bring panels closer together */
+  gap: 15px;
   align-items: flex-start;
 }
 
-/* Locate .sidebar and reduce gap from 20px to 12px */
 .sidebar {
   flex: 0 0 320px;
   display: flex;
   flex-direction: column;
-  gap: 12px; /* Pull blocks vertically together */
+  gap: 12px;
 }
 
-/* Locate .sidebar-section and reduce padding from 20px to 12px */
 .sidebar-section {
   background: white;
   border-radius: 10px;
-  padding: 12px; /* Tighten up inner elements */
+  padding: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #e0e0e0;
   flex-shrink: 0;
 }
 
-/* Exercise selector container sizing */
 .sidebar-section:first-child {
   min-height: 100px;
   max-height: none;
@@ -192,7 +186,6 @@
   overflow-y: auto;
 }
 
-/* Scrollbar for exercise info when needed */
 .sidebar-section:first-child.has-exercise::-webkit-scrollbar {
   width: 6px;
 }
@@ -220,7 +213,6 @@
   padding-bottom: 8px;
 }
 
-/* Status Info */
 .status-info {
   display: flex;
   flex-direction: column;
@@ -257,7 +249,6 @@
   color: #e74c3c;
 }
 
-/* Status value colors */
 .status-value.status-none {
   color: #dc3545;
 }
@@ -270,7 +261,6 @@
   color: #28a745;
 }
 
-/* Main Area - Right */
 .main-area {
   flex: 1;
   display: flex;
@@ -279,7 +269,6 @@
   min-width: 0;
 }
 
-/* Camera Section - FIX THIS */
 .camera-section {
   background: white;
   border-radius: 10px;
@@ -292,11 +281,10 @@
   flex-grow: 1;
 }
 
-/* Remove or update camera-view-wrapper since it's redundant */
 .camera-view-wrapper {
   width: 100%;
   height: 100%;
-  flex-grow: 1; /* Take all available space */
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
 }
@@ -314,9 +302,7 @@
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #e0e0e0;
-
-  /* RESPONSIVE FIX */
-  max-height: 380px;      /* you can tune this */
+  max-height: 380px;
   overflow-y: auto;
 }
 
@@ -327,7 +313,6 @@
   font-size: 1.1em;
 }
 
-/* Welcome Message */
 .welcome-message {
   text-align: center;
   padding: 20px;
@@ -364,17 +349,10 @@
   line-height: 1.4;
 }
 
-/* Exercise Selector Fix */
-/* .exercise-selector {
-  min-height: 400px;
-} */
-
-/* Make dropdown larger */
 .dropdown-menu {
   max-height: 300px !important;
 }
 
-/* Media Queries */
 @media (max-width: 1200px) {
   .main-content {
     flex-direction: column;
@@ -383,14 +361,14 @@
   .sidebar {
     flex: none;
     width: 100%;
-    height: auto; /* Remove fixed height on mobile */
-    position: static; /* Remove sticky on mobile */
+    height: auto;
+    position: static;
   }
   
   .camera-section,
   .feedback-section {
-    height: auto; /* Auto height on mobile */
-    min-height: 400px; /* Reasonable minimum */
+    height: auto;
+    min-height: 400px;
     max-height: none;
   }
 }
@@ -541,7 +519,6 @@
   border: 1px solid #c3e6cb;
 }
 
-/* Alternative using specific classes if :has isn't supported */
 .session-status-active {
   background: #d4edda;
   color: #155724;
