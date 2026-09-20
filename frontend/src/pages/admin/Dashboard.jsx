@@ -25,7 +25,6 @@ export default function Dashboard() {
         <div className="admin-dashboard">
             <h1>Admin Dashboard</h1>
             
-            {/* Grid wrapping stats cards only */}
             <div className="dashboard-grid">
                 <div className="dashboard-card">
                     <h2>{stats.users}</h2>
@@ -49,7 +48,6 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            {/* Placed outside the grid container to naturally flow onto the next line */}
             <div className="dashboard-actions">
                 <Link className="action-btn" to="/admin/users">
                     User Management

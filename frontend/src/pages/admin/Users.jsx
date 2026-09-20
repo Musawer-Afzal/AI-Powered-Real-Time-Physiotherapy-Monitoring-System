@@ -131,7 +131,6 @@ export default function Users() {
                 </div>
             </div>
 
-            {/* Step 4: Toolbar */}
             <div className="toolbar">
                 <div className="search-box">
                     <input
@@ -293,7 +292,6 @@ export default function Users() {
 
             {/* Patients Section */}
             <section className="admin-section">
-                {/* Fixed: Removed the stray, out-of-loop <td> block from here */}
                 <div className="section-header">
                     <h2>Patients</h2>
                     <span>{patients.length}</span>
