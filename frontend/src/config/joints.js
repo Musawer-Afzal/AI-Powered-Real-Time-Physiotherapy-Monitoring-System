@@ -11,8 +11,8 @@ export const JOINT_CONFIG = {
       rotation: [0, 90]
     },
     landmarks: {
-      primary: [11, 12],      // Left/Right shoulder indices
-      reference: [23, 24]     // Hips for alignment
+      primary: [11, 12],
+      reference: [23, 24]
     }
   },
   
@@ -25,8 +25,8 @@ export const JOINT_CONFIG = {
       extension: [150, 0]
     },
     landmarks: {
-      primary: [13, 14],      // Left/Right elbow indices
-      reference: [11, 12, 15, 16] // Shoulders and wrists
+      primary: [13, 14],
+      reference: [11, 12, 15, 16]
     }
   },
   
@@ -40,8 +40,8 @@ export const JOINT_CONFIG = {
       rotation: [0, 80]
     },
     landmarks: {
-      primary: [0, 1, 2, 3, 4],  // Face landmarks
-      reference: [11, 12]         // Shoulders
+      primary: [0, 1, 2, 3, 4],
+      reference: [11, 12]
     },
     note: 'Limited accuracy with MediaPipe - use with caution'
   },
@@ -107,7 +107,6 @@ export const LANDMARK_TO_JOINT = {
   28: 'right_ankle'
 };
 
-// Angle calculation formulas
 export const ANGLE_FORMULAS = {
   // Angle between three points: a (proximal) - b (joint) - c (distal)
   shoulder_abduction: [23, 11, 13],  // Hip - Shoulder - Elbow
