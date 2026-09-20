@@ -34,7 +34,7 @@ const getExercise = (id) => {
   const upper = getUpperBodyExercise(id);
   if (upper) {
     if (!loggedExercises.has(id)) {
-      console.log(`✅ Found ${id} in upper body`);
+      console.log(`Found ${id} in upper body`);
       loggedExercises.add(id);
     }
     return upper;
@@ -43,7 +43,7 @@ const getExercise = (id) => {
   const mid = getMidBodyExercise(id);
   if (mid) {
     if (!loggedExercises.has(id)) {
-      console.log(`✅ Found ${id} in mid body`);
+      console.log(`Found ${id} in mid body`);
       loggedExercises.add(id);
     }
     return mid;
@@ -52,13 +52,13 @@ const getExercise = (id) => {
   const lower = getLowerBodyExercise(id);
   if (lower) {
     if (!loggedExercises.has(id)) {
-      console.log(`✅ Found ${id} in lower body`);
+      console.log(`Found ${id} in lower body`);
       loggedExercises.add(id);
     }
     return lower;
   }
   
-  console.error('❌ Exercise not found in any category:', id);
+  console.error('Exercise not found in any category:', id);
   console.log('Available upper body exercises:', Object.keys(UPPER_BODY_EXERCISES || {}));
   console.log('Available mid body exercises:', Object.keys(MID_BODY_EXERCISES || {}));
   console.log('Available lower body exercises:', Object.keys(LOWER_BODY_EXERCISES || {}));
