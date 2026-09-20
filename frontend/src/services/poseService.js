@@ -79,7 +79,6 @@ function drawPose(results) {
   canvasContext.save();
   canvasContext.clearRect(0, 0, canvasElement.width, canvasElement.height);
   
-  // Mirror the canvas for user comfort (EXACTLY like your working code)
   canvasContext.scale(-1, 1);
   canvasContext.translate(-canvasElement.width, 0);
   
@@ -89,7 +88,6 @@ function drawPose(results) {
     0, 0, canvasElement.width, canvasElement.height
   );
   
-  // Draw landmarks using MediaPipe's drawing utils (like your working code)
   if (results.poseLandmarks) {
     drawConnectors(canvasContext, results.poseLandmarks, Pose.POSE_CONNECTIONS, {
       color: '#00FF00',
