@@ -14,19 +14,17 @@ export function initializePoseDetection(videoRef, canvasRef, onResults) {
   });
 
   pose.onResults((results) => {
-    const canvas = canvasRef.current; // ✅ Define canvas here
-    const video = videoRef.current; // ✅ Define video here
+    const canvas = canvasRef.current;
+    const video = videoRef.current;
     if (!canvas || !video) return;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // ✅ MIRROR THE ENTIRE CANVAS CONTEXT
     ctx.save();
-    ctx.scale(-1, 1); // Mirror horizontally
-    ctx.translate(-canvas.width, 0); // Move back into view
-    // Draw video (will be mirrored)
+    ctx.scale(-1, 1);
+    ctx.translate(-canvas.width, 0);
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     if (results.poseLandmarks) {
-      // ✅ SWAP LEFT/RIGHT LANDMARKS because MediaPipe is seeing them inverted
+      // SWAP LEFT/RIGHT LANDMARKS because MediaPipe is seeing them inverted
       const swappedLandmarks = [...results.poseLandmarks];
       // Swap left and right landmarks
       const swapPairs = [
