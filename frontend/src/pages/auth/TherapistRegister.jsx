@@ -96,8 +96,7 @@ export default function TherapistRegister() {
                             onChange={(e)=>setForm({
                                 ...form,
                                 gender:e.target.value
-                            })}
-                        >
+                            })}>
                             <option value="">
                                 Select Gender
                             </option>
@@ -126,9 +125,7 @@ export default function TherapistRegister() {
                     </div>
                     <div className="form-group">
                         <label>Password</label>
-
                         <div className="password-wrapper">
-
                             <input
                                 type={showPassword ? "text" : "password"}
                                 value={form.password}
@@ -140,7 +137,6 @@ export default function TherapistRegister() {
                                 }
                                 required
                             />
-
                             <button
                                 type="button"
                                 className="password-toggle"
@@ -150,14 +146,11 @@ export default function TherapistRegister() {
                             >
                                 {showPassword ? "🙈" : "👁"}
                             </button>
-
                         </div>
                     </div>
                     <div className="form-group">
                         <label>Confirm Password</label>
-
                         <div className="password-wrapper">
-
                             <input
                                 type={showConfirmPassword ? "text" : "password"}
                                 value={form.confirmPassword}
@@ -169,7 +162,6 @@ export default function TherapistRegister() {
                                 }
                                 required
                             />
-
                             <button
                                 type="button"
                                 className="password-toggle"
