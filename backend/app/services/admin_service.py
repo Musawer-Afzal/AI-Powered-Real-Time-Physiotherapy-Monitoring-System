@@ -9,9 +9,7 @@ from app.models.therapist_patient import TherapistPatient
 
 
 def get_dashboard_stats(db: Session):
-
     return {
-
         "users":
             db.query(User).count(),
 
@@ -25,13 +23,10 @@ def get_dashboard_stats(db: Session):
             db.query(Session).count(),
 
         "pending_therapists":
-            db.query(User)
-            .filter(
+            db.query(User).filter(
                 User.role == "therapist",
                 User.is_approved == False
-            )
-            .count()
-
+            ).count()
     }
 
 def get_all_users(
@@ -42,7 +37,6 @@ def get_all_users(
 ):
 
     query = db.query(User)
-
     if role:
         query = query.filter(
             User.role == role
@@ -54,66 +48,38 @@ def get_all_users(
         )
 
     if search:
-
-        query = query.filter(
-
-            or_(
+        query = query.filter(or_(
                 User.name.ilike(f"%{search}%"),
                 User.email.ilike(f"%{search}%")
             )
-
         )
 
     users = query.order_by(
         User.created_at.desc()
     ).all()
-
     return users
 
 def approve_therapist(db: Session, user_id):
-
-    therapist = (
-
-        db.query(User)
-
-        .filter(User.id == user_id)
-
-        .first()
-
-    )
-
+    therapist = (db.query(User).filter(User.id == user_id).first())
     if not therapist:
-
         return None
-
     therapist.is_approved = True
-
     db.commit()
-
     db.refresh(therapist)
-
     return therapist
 
 
-def update_user_status(
-    db: Session,
-    user_id,
-    approved
-):
-
+def update_user_status(db: Session, user_id, approved):
     user = (
         db.query(User)
         .filter(User.id == user_id)
         .first()
     )
-
     if not user:
         return False
-
+    
     user.is_approved = approved
-
     db.commit()
-
     return True
 
 
