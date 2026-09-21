@@ -115,21 +115,6 @@ export class ExerciseAnalyzer {
     const target = this.exercise.targetAngles?.[this.exercise.joint];
     if (!target) return;
 
-    console.log('-------------------------');
-    console.log('ANGLE:', Math.round(angle));
-    console.log('PHASE:', this.state.repPhase);
-    console.log('TARGET:', target);
-    
-    console.log({
-      exercise: this.exercise.name,
-      angle: Math.round(angle),
-      lastAngle: this.state.lastAngle
-        ? Math.round(this.state.lastAngle)
-        : null,
-      phase: this.state.repPhase,
-      reps: this.state.totalReps
-    });
-
     const { min, max, optimal } = target;
     const optimalMin = optimal?.[0] || Math.min(min, max);
     const optimalMax = optimal?.[1] || Math.max(min, max);
@@ -141,14 +126,6 @@ export class ExerciseAnalyzer {
     const inTargetRange =
       angle >= optimalMin &&
       angle <= optimalMax;
-
-      console.log({
-        angle: Math.round(angle),
-        min,
-        max,
-        isDecreasing,
-        inTargetRange
-      });
     
     // Determine direction
     let direction = null;
@@ -174,7 +151,7 @@ export class ExerciseAnalyzer {
             this.state.peakAngle = angle;
 
             console.log(
-              `▶️ Rep started at angle: ${Math.round(angle)}°`
+              `Rep started at angle: ${Math.round(angle)}°`
             );
           }
 
@@ -191,7 +168,7 @@ export class ExerciseAnalyzer {
             this.state.peakAngle = angle;
 
             console.log(
-              `▶️ Rep started at angle: ${Math.round(angle)}°`
+              `Rep started at angle: ${Math.round(angle)}°`
             );
           }
         }
@@ -202,10 +179,6 @@ export class ExerciseAnalyzer {
           `MOVING | angle=${Math.round(angle)} | peak=${Math.round(this.state.peakAngle || 0)}`
         );
 
-        console.log({
-          angle,
-          peakAngle: this.state.peakAngle
-        });
         // Track peak
         if (isDecreasing) {
           if (angle < this.state.peakAngle) this.state.peakAngle = angle;
@@ -217,7 +190,6 @@ export class ExerciseAnalyzer {
         if (inTargetRange) {
           this.state.repPhase = 'peak';
           this.state.peakTime = timestamp;
-          console.log(`🎯 Reached target: ${Math.round(angle)}°`);
         }
         
         // Check if started returning
@@ -298,9 +270,7 @@ export class ExerciseAnalyzer {
   }
 
   getCurrentState() {
-    const accuracy = this.state.totalReps > 0 
-      ? Math.round((this.state.goodReps / this.state.totalReps) * 100) 
-      : 0;
+    const accuracy = this.state.totalReps > 0 ? Math.round((this.state.goodReps / this.state.totalReps) * 100) : 0;
     
     return {
       totalReps: this.state.totalReps,
