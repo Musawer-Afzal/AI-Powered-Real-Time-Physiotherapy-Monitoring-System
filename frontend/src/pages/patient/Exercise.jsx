@@ -66,7 +66,6 @@ const getExercise = (id) => {
   return null;
 };
 
-// Exercise Info Component
 function ExerciseInfo({ exerciseId, exercise }) {
   if (!exercise) return null;
   
@@ -174,7 +173,7 @@ function MainApp() {
   };
 
   const handleExerciseSelect = (exerciseId) => {
-    console.log('🔄 App.jsx - Selecting exercise:', exerciseId);
+    console.log('App.jsx - Selecting exercise:', exerciseId);
     
     const exercise = getExercise(exerciseId);
     if (!exercise) {
