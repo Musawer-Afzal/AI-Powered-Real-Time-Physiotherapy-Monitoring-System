@@ -29,10 +29,7 @@ router = APIRouter(
 
 
 @router.post("/register")
-def register(
-    user: UserRegister,
-    db: Session = Depends(get_db)
-):
+def register(user: UserRegister, db: Session = Depends(get_db)):
     created_user = create_user(
         db=db,
         name=user.name,
@@ -57,17 +54,12 @@ def register(
     "/login",
     response_model=TokenResponse
 )
-def login(
-    request: LoginRequest,
-    db: Session = Depends(get_db)
-):
-
+def login(request: LoginRequest, db: Session = Depends(get_db)):
     user = authenticate_user(
         db,
         request.email,
         request.password
     )
-
     if user == "NOT_APPROVED":
         raise HTTPException(
             status_code=403,
@@ -78,7 +70,6 @@ def login(
             status_code=401,
             detail="Invalid credentials"
         )
-
     token = create_access_token(
         {
             "sub": str(user.id),
@@ -90,5 +81,4 @@ def login(
         "access_token": token,
         "token_type": "bearer",
         "role": user.role
-
     }
