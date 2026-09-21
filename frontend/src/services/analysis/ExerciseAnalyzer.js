@@ -4,9 +4,7 @@ export class ExerciseAnalyzer {
   constructor(exerciseConfig) {
     this.exercise = exerciseConfig;
     this.reset();
-    
-    console.log(`🏋️‍♂️ Initialized analyzer for: ${exerciseConfig.name}`);
-  }
+    }
 
   reset() {
     this.state = {
@@ -75,14 +73,6 @@ export class ExerciseAnalyzer {
       case 'elbow':
         const leftElbow = angles.leftElbow || 0;
         const rightElbow = angles.rightElbow || 0;
-
-        console.log(
-          'LEFT ELBOW:',
-          Math.round(leftElbow),
-          'RIGHT ELBOW:',
-          Math.round(rightElbow)
-        );
-
         return Math.min(leftElbow, rightElbow);
         
       case 'hip':
